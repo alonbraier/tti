@@ -320,8 +320,9 @@
 /* ================= TTI MENU (desktop briefcase interior) ================= */
 @media (min-width:1024px){
   #caseInterior{ padding:0 !important; right:0 !important; width:auto !important; }
-  #starfieldCanvas, #iaRoot{ display:none !important; }
-  #ttiMenu{ position:absolute !important; inset:0; z-index:2 !important; color:#fff; background:#000; text-align:left; font-synthesis:none;
+  #iaRoot{ display:none !important; }
+  #caseInteriorBack{ display:none !important; }   /* no close link: the browser's back button (or Esc) closes the case */
+  #ttiMenu{ position:absolute !important; inset:0; z-index:2 !important; color:#fff; background:transparent; text-align:left; font-synthesis:none;
     font-family:'EB Garamond',Georgia,serif; font-weight:500; overflow:hidden; }
   #ttiMenu svg{ display:block; width:100%; height:100%; overflow:visible; }
   #ttiMenu button{ font:inherit; color:inherit; background:none; border:0; padding:0; margin:0; cursor:pointer; -webkit-tap-highlight-color:transparent; }
@@ -6056,6 +6057,7 @@ function latchClick(){
     if (opening || opened) return;
     opening = true;
     caseIsOpen = true;
+    if (isDesk()){ try{ history.pushState({ttiCase:1}, ''); }catch(e){}  if (window.__ttiDive) window.__ttiDive(true); }
     if (window.__syncCaseOverlay) window.__syncCaseOverlay();
 
     // 1) Open Box artwork fades/lifts in, covering the closed lid face;
@@ -6086,7 +6088,10 @@ function latchClick(){
     }, 1500);
   }
 
+  function isDesk(){ return matchMedia('(min-width:1024px)').matches; }
   function closeCase(){
+    if (!caseIsOpen) return;
+    if (window.__ttiDive) window.__ttiDive(false);
     if (interior) interior.classList.remove('is-visible');
     setTimeout(() => {
       if (blackout) blackout.classList.remove('is-active');
@@ -6111,6 +6116,8 @@ function latchClick(){
     openCase();
   }));
   if (backBtn) backBtn.addEventListener('click', closeCase);
+  window.addEventListener('popstate', () => { if (caseIsOpen) closeCase(); });           // browser back closes the case
+  window.addEventListener('keydown', e => { if (e.key === 'Escape' && caseIsOpen && isDesk()){ if (history.state && history.state.ttiCase) history.back(); else closeCase(); } });
 })();
 
 // ---------- Latest / news feed — shared between desktop sidebar and mobile briefcase interior ----------
@@ -7287,7 +7294,7 @@ function shakerHit(t, pitchNorm){
 }
 
 /* ─────────── audio ─────────── */
-let toneLP=null, toneHP=null, outBus=null;
+let toneLP=null, toneHP=null, outBus=null, diveGain=null, diveOn=false;
 let ac=null, master=null, dry=null, wet=null, verb=null, radioBus=null;
 let running=false, step=0, nextTime=0, timer=null;
 let bpm=81;
@@ -7312,7 +7319,8 @@ function boot(){
   toneLP=ac.createBiquadFilter(); toneLP.type='lowpass'; toneLP.frequency.value=20000; toneLP.Q.value=0.9;
   toneHP=ac.createBiquadFilter(); toneHP.type='highpass'; toneHP.frequency.value=20; toneHP.Q.value=0.9;
   outBus=ac.createGain(); outBus.gain.value=powerOff?0:1;   // starts muted if the switch is already off
-  toneLP.connect(toneHP).connect(outBus).connect(ac.destination);
+  diveGain=ac.createGain(); diveGain.gain.value=diveOn?0:1;
+  toneLP.connect(toneHP).connect(diveGain).connect(outBus).connect(ac.destination);
   master.connect(dry).connect(toneLP);
   master.connect(damp).connect(verb).connect(wet).connect(toneLP);
   // drier bus for close/intimate sounds (radio) — mostly dry, tiny verb send
@@ -7558,6 +7566,13 @@ let pendingTone=0;
 let dimAmt=0;
 window.__ttiDim=function(f){ dimAmt=Math.max(0,Math.min(1,f)); if(!ac||!toneLP) return;
   toneLP.frequency.setTargetAtTime(20000*Math.pow(320/20000,dimAmt), ac.currentTime, 0.12); };
+// diving into the case (desktop): the soundtrack sinks behind a low-pass and slowly fades away; coming back up brings it back
+window.__ttiDive=function(on){ diveOn=!!on; if(!ac||!diveGain||!toneLP) return; const n=ac.currentTime;
+  [diveGain.gain,toneLP.frequency].forEach(p=>{ p.cancelScheduledValues(n); p.setValueAtTime(p.value,n); });
+  if(on){ toneLP.frequency.setTargetAtTime(260,n,0.5);               // muffled within a second or so
+          diveGain.gain.setTargetAtTime(0,n+0.4,1.6); }               // then gone over ~6 seconds
+  else  { toneLP.frequency.setTargetAtTime(20000*Math.pow(320/20000,dimAmt),n,0.35);
+          diveGain.gain.setTargetAtTime(1,n,0.4); } };
 // any first touch on a control wakes the sound engine (browsers only allow audio after a gesture)
 let powerOff=false;   // the speaker's on/off switch: mutes the output, nothing else changes
 function wake(){ if(!ac){ boot(); setTone(pendingTone); } if(ac.state==='suspended') ac.resume(); if(!running) start(); }
@@ -8331,7 +8346,6 @@ addEventListener('keydown',e=>{ if(!interior.classList.contains('is-visible')) r
 window.__ttiMenuTune = { TUNE, get cur(){return cur;}, go(i){ selected.clear(); cur=i; stopListen(); render(); },
   set(t){ Object.assign(TUNE.image,t.image||{}); Object.assign(TUNE.num,t.num||{}); if(t.numEach) TUNE.numEach=t.numEach; render(); },
   ghost(v){ ghost=!!v; render(); } };
-window.__warpField = { start(){}, stop(){}, resize(){} };
 
 addEventListener('resize',layout);
 render(); layout();
