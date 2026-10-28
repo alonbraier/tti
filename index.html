@@ -318,6 +318,7 @@
   #ms_m svg *{ stroke-width:var(--line) !important; }
 }
 /* ================= TTI MENU (desktop briefcase interior) ================= */
+html.tti-in-case, html.tti-in-case body{ overflow:hidden !important; }
 @media (min-width:1024px){
   #caseInterior{ padding:0 !important; right:0 !important; width:auto !important; }
   #iaRoot{ display:none !important; }
@@ -6058,6 +6059,7 @@ function latchClick(){
     opening = true;
     caseIsOpen = true;
     if (isDesk()){ try{ history.pushState({ttiCase:1}, ''); }catch(e){}  if (window.__ttiDive) window.__ttiDive(true); }
+    setTimeout(() => { if (caseIsOpen && isDesk()){ document.documentElement.classList.add('tti-in-case'); dispatchEvent(new Event('resize')); } }, 1460);   // the garden's scrollbar goes away once we're inside
     if (window.__syncCaseOverlay) window.__syncCaseOverlay();
 
     // 1) Open Box artwork fades/lifts in, covering the closed lid face;
@@ -6092,6 +6094,7 @@ function latchClick(){
   function closeCase(){
     if (!caseIsOpen) return;
     if (window.__ttiDive) window.__ttiDive(false);
+    document.documentElement.classList.remove('tti-in-case'); dispatchEvent(new Event('resize'));
     if (interior) interior.classList.remove('is-visible');
     setTimeout(() => {
       if (blackout) blackout.classList.remove('is-active');
