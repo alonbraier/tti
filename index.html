@@ -8361,7 +8361,7 @@ if(document.fonts&&document.fonts.ready) document.fonts.ready.then(layout);
 <script>
 /* ---------- paper grain on the sidebar (set with tti-menu-tune.html) ----------
    strength: how visible (0 = off) · size: bigger = coarser grain · contrast: soft fibers (1) to sharp specks (4) */
-const GRAIN = { strength:0.45, size:1, contrast:2.2 };
+const GRAIN = { strength:0.08, size:1.55, contrast:3.6 };
 (function(){
   const el=document.getElementById('paperGrain'); if(!el) return;
   function apply(g){ Object.assign(GRAIN,g||{});
