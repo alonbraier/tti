@@ -8274,7 +8274,8 @@ function render(){
   // right column
   logoHost.innerHTML = ins.live ? `<svg viewBox="1909 75 452 300">${ART.logo1||''}</svg>` : `<svg viewBox="1909 75 452 300">${ART.star||''}</svg>`;
   taglineEl.textContent = ins.tagline || '';
-  textEl.innerHTML = (ins.text||[]).map(p=>'<p>'+p.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))+'</p>').join('');
+  const keep = p => p.replace(/(^|\s)(a|an|A|An|I)\s+/g, '$1$2\u00a0');   // short words like "a" and "I" never sit alone at the end of a line
+  textEl.innerHTML = (ins.text||[]).map(p=>'<p>'+keep(p).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))+'</p>').join('');
   rightEl.classList.toggle('is-wip', !ins.live);
 }
 
