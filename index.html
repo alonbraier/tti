@@ -8403,27 +8403,29 @@ const SIDEBAR_LETTER = [
   'Let the knob twiddling begin! And help spread the word if you enjoyed your time.',
   'Peace out,'
 ];
+/* layout of the letter, in sidebar design units (set with tti-letter-tool.html). The left column runs at size 20 / lines 24 */
+const LETTER = { size:20, line:19, gap:10, width:222, top:0, sig:0 };
 (function(){
+  const svg=document.getElementById('sidebarSvg');
   const t=[...document.querySelectorAll('#sidebarSvg text')].find(t=>t.getAttribute('transform')==='translate(278.7 460.3)'); if(!t) return;
-  const NS='http://www.w3.org/2000/svg', MAXW=222, LAST_Y=576;   // column width, and where "Peace out," may sit at the latest (just above the signature)
-  const glue=p=>p.replace(/(^|\s)(a|an|A|An|I)\s+/g,'$1$2\u00a0').replace(/\s+(\S+)$/,'\u00a0$1');   // no lonely words: short words stay with the next, the last word stays with the one before
+  const sigParts=[...svg.querySelectorAll('[stroke-width="2.4"]')];      // the drawn signature
+  const NS='http://www.w3.org/2000/svg';
+  const glue=p=>p.replace(/(^|\s)(a|an|A|An|I)\s+/g,'$1$2 ').replace(/\s+(\S+)$/,' $1');   // no lonely words: short words stay with the next, the last word stays with the one before
   function build(){
-    t.textContent='';
+    const L=LETTER; t.textContent=''; t.setAttribute('font-size',L.size+'px'); t.setAttribute('transform',`translate(278.7 ${460.3+L.top})`);
     const probe=document.createElementNS(NS,'tspan'); t.appendChild(probe);
-    const lines=[];                                   // [text, paragraphIndex]
+    const lines=[];
     SIDEBAR_LETTER.forEach((p,pi)=>{ let line='';
       glue(p).split(' ').forEach(w=>{ const test=line?line+' '+w:w; probe.textContent=test;
-        if(line && probe.getComputedTextLength()>MAXW){ lines.push([line,pi]); line=w; } else line=test; });
+        if(line && probe.getComputedTextLength()>L.width){ lines.push([line,pi]); line=w; } else line=test; });
       if(line) lines.push([line,pi]); });
     probe.remove();
-    const gaps=SIDEBAR_LETTER.length-1, n=lines.length;
-    let lh=24, gap=24;                                // a blank line between paragraphs, like the original
-    if((n-1)*lh+gaps*gap>LAST_Y) gap=Math.max(10,(LAST_Y-(n-1)*lh)/gaps);
-    if((n-1)*lh+gaps*gap>LAST_Y) lh=(LAST_Y-gaps*gap)/(n-1);
     let y=0, prev=0;
-    lines.forEach(([txt,pi],k)=>{ if(k&&pi!==prev) y+=gap; prev=pi;
-      const s=document.createElementNS(NS,'tspan'); s.setAttribute('x','0'); s.setAttribute('y',y.toFixed(1)); s.textContent=txt; t.appendChild(s); y+=lh; });
+    lines.forEach(([txt,pi],k)=>{ if(k&&pi!==prev) y+=L.gap; prev=pi;
+      const s=document.createElementNS(NS,'tspan'); s.setAttribute('x','0'); s.setAttribute('y',y.toFixed(1)); s.textContent=txt; t.appendChild(s); y+=L.line; });
+    sigParts.forEach(p=>p.style.transform=L.sig?`translateY(${L.sig}px)`:'');
   }
+  window.__ttiLetter={ LETTER, get text(){return SIDEBAR_LETTER;}, set(o,paras){ Object.assign(LETTER,o||{}); if(paras){ SIDEBAR_LETTER.length=0; SIDEBAR_LETTER.push(...paras);} build(); } };
   build(); if(document.fonts&&document.fonts.ready) document.fonts.ready.then(build);
 })();
 </script>
