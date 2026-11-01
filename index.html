@@ -8393,5 +8393,39 @@ const INK = { body:0, head:0, rough:0.6 };
   window.__ttiInk={ INK, set:apply }; apply();
 })();
 </script>
+
+<script>
+/* ---------- the sidebar letter (right column). Edit the paragraphs here; the lines wrap themselves to the column ---------- */
+const SIDEBAR_LETTER = [
+  'It’s midday, the sun is up, and you’re walking on the grass when you stumble upon a suitcase full of weird little instruments.',
+  'Greetings, you have found it: the garden of TTI. The garden of “ooh, what’s that sound?” but also “omg, make it stop beeping!”',
+  'Cool sounds and noodling around with web instruments you can just click and play. Made to push the limits of your browser, but also just to enjoy and have fun. They might not behave like the synths and drum machines you know. This isn’t Keyboard Kingdom down at the strip mall. But don’t worry, no music theory or experience with electronic instruments needed.',
+  'Let the knob twiddling begin! And help spread the word if you enjoyed your time.',
+  'Peace out,'
+];
+(function(){
+  const t=[...document.querySelectorAll('#sidebarSvg text')].find(t=>t.getAttribute('transform')==='translate(278.7 460.3)'); if(!t) return;
+  const NS='http://www.w3.org/2000/svg', MAXW=222, LAST_Y=576;   // column width, and where "Peace out," may sit at the latest (just above the signature)
+  const glue=p=>p.replace(/(^|\s)(a|an|A|An|I)\s+/g,'$1$2\u00a0').replace(/\s+(\S+)$/,'\u00a0$1');   // no lonely words: short words stay with the next, the last word stays with the one before
+  function build(){
+    t.textContent='';
+    const probe=document.createElementNS(NS,'tspan'); t.appendChild(probe);
+    const lines=[];                                   // [text, paragraphIndex]
+    SIDEBAR_LETTER.forEach((p,pi)=>{ let line='';
+      glue(p).split(' ').forEach(w=>{ const test=line?line+' '+w:w; probe.textContent=test;
+        if(line && probe.getComputedTextLength()>MAXW){ lines.push([line,pi]); line=w; } else line=test; });
+      if(line) lines.push([line,pi]); });
+    probe.remove();
+    const gaps=SIDEBAR_LETTER.length-1, n=lines.length;
+    let lh=24, gap=24;                                // a blank line between paragraphs, like the original
+    if((n-1)*lh+gaps*gap>LAST_Y) gap=Math.max(10,(LAST_Y-(n-1)*lh)/gaps);
+    if((n-1)*lh+gaps*gap>LAST_Y) lh=(LAST_Y-gaps*gap)/(n-1);
+    let y=0, prev=0;
+    lines.forEach(([txt,pi],k)=>{ if(k&&pi!==prev) y+=gap; prev=pi;
+      const s=document.createElementNS(NS,'tspan'); s.setAttribute('x','0'); s.setAttribute('y',y.toFixed(1)); s.textContent=txt; t.appendChild(s); y+=lh; });
+  }
+  build(); if(document.fonts&&document.fonts.ready) document.fonts.ready.then(build);
+})();
+</script>
 </body>
 </html>
