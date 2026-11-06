@@ -8412,7 +8412,7 @@ const SIDEBAR_NEWS = [
   '05/28 - TTI-01 DADO\nThe little ambient groovebox is officially online.',
   '04/12\nThe TTI concept is first being developed and tested. The plan is to create ten twisted musical instruments, one instrument at a time, all in the browser, available to play anytime, anywhere.'
 ];
-const LETTER = { size:20, line:24, gap:24, width:200, newsWidth:190, top:0, sig:0 };   // width 200 = the column ends where the doodle frame ends; sig = extra nudge, the signature already follows "Peace out,"
+const LETTER = { size:20, line:24, gap:24, width:200, newsWidth:190, top:0, sig:0, align:'ragged', squeeze:3 };   // width 200 = the column ends where the doodle frame ends; sig = extra nudge, the signature already follows "Peace out,"
 (function(){
   const svg=document.getElementById('sidebarSvg');
   const t=[...document.querySelectorAll('#sidebarSvg text')].find(t=>t.getAttribute('transform')==='translate(278.7 460.3)'); if(!t) return;
@@ -8423,18 +8423,48 @@ const LETTER = { size:20, line:24, gap:24, width:200, newsWidth:190, top:0, sig:
   if(outlined) outlined.style.display='none';
   const news=t.cloneNode(false); news.setAttribute('transform','translate(31 460.3)'); t.parentNode.insertBefore(news,t);
   const glue=(p,end)=>{ p=p.replace(/(^|\s)(a|an|A|An|I)\s+/g,'$1$2\u00a0'); return end ? p.replace(/\s+(\S+)$/,'\u00a0$1') : p; };   // no lonely words: short words stay with the next; a paragraph's last word stays with the one before
-  function flow(el, paras, width, x, L){             // wraps paragraphs into lines; returns where the last line sits
+  /* typesetting: like a press designer, the breaks are chosen for the whole paragraph at once (not greedily),
+     and each line may be squeezed or loosened by a hair so the lines come out even.
+     LETTER.align: 'ragged' (straight left edge, even right edge) or 'justify' (straight both sides)
+     LETTER.squeeze: how much a line may tighten, in % of its width · a "~" inside a word marks where it may be hyphenated */
+  function flow(el, paras, width, x, L){             // returns where the last line sits
     el.textContent=''; el.setAttribute('font-size',L.size+'px'); el.setAttribute('transform',`translate(${x} ${460.3+L.top})`);
     const probe=document.createElementNS(NS,'tspan'); el.appendChild(probe);
-    const lines=[];
-    paras.forEach((p,pi)=>p.split('\n').forEach((seg,si,all)=>{ let line='';      // a line break inside a paragraph (\n) always starts a new line
-      glue(seg.trim(), si===all.length-1).split(' ').forEach(w=>{ const test=line?line+' '+w:w; probe.textContent=test;
-        if(line && probe.getComputedTextLength()>width){ lines.push([line,pi]); line=w; } else line=test; });
-      if(line) lines.push([line,pi]); }));
+    const W=s=>{ probe.textContent=s; return probe.getComputedTextLength(); };
+    const SP=W('a a')-W('aa'), HY=W('-');
+    const sq=(L.squeeze??3)/100, justify=L.align==='justify', out=[];
+    paras.forEach((p,pi)=>p.split('\n').forEach((seg,si,all)=>{
+      // tokens: pieces of words; "join" = no space before it (a hyphenation point sits between)
+      const toks=[];
+      glue(seg.trim(), si===all.length-1).split(' ').filter(Boolean).forEach(word=>word.split('~').forEach((pc,k)=>toks.push({t:pc, w:W(pc), join:k>0})));
+      const n=toks.length; if(!n) return;
+      const lineW=(i,j)=>{ let s=0; for(let k=i;k<j;k++){ s+=toks[k].w; if(k>i && !toks[k].join) s+=SP; } if(j<n && toks[j].join) s+=HY; return s; };
+      const words=(i,j)=>{ let c=0; for(let k=i;k<j;k++) if(!toks[k].join) c++; return c; };
+      // cost of a line: how far it is from the column width (squeezing costs more than leaving air)
+      const cost=(i,j)=>{ const nat=lineW(i,j), last=j===n, r=(width-nat)/width;
+        if(nat*(1-sq)>width && j-i>1) return Infinity;
+        let c = r<0 ? (r/Math.max(sq,0.001))**2*60 : (last ? 0 : (justify ? (r/0.05)**2*10 + (r>0.1?400:0) : (r/0.12)**2*10));
+        if(!last && words(i,j)<=2) c+=80;                          // no two-word lines
+        if(j<n && toks[j].join) c+=25;                             // hyphenate only when it really helps
+        return c; };
+      const best=new Array(n+1).fill(Infinity), from=new Array(n+1).fill(0); best[0]=0;
+      for(let j=1;j<=n;j++) for(let i=j-1;i>=0;i--){ if(i>0 && toks[i].join && false) continue;
+        const c=cost(i,j); if(c===Infinity){ if(lineW(i,j)>width*1.5) break; else continue; }
+        if(best[i]+c<best[j]){ best[j]=best[i]+c; from[j]=i; } }
+      const br=[]; for(let j=n;j>0;j=from[j]) br.unshift([from[j],j]);
+      br.forEach(([i,j])=>{ let s=''; for(let k=i;k<j;k++) s+=(k>i && !toks[k].join?' ':'')+toks[k].t; if(j<n && toks[j].join) s+='-';
+        out.push({txt:s, pi, nat:lineW(i,j), last:j===n, head:si<all.length-1, gaps:words(i,j)-1}); });   // head = a title line (before an Enter): never stretched
+    }));
     probe.remove();
     let y=0, prev=0;
-    lines.forEach(([txt,pi],k)=>{ if(k&&pi!==prev) y+=L.gap; prev=pi;
-      const s=document.createElementNS(NS,'tspan'); s.setAttribute('x','0'); s.setAttribute('y',y.toFixed(1)); s.textContent=txt; el.appendChild(s); y+=L.line; });
+    out.forEach((ln,k)=>{ if(k&&ln.pi!==prev) y+=L.gap; prev=ln.pi;
+      const s=document.createElementNS(NS,'tspan'); s.setAttribute('x','0'); s.setAttribute('y',y.toFixed(1)); s.textContent=ln.txt;
+      const chars=Math.max(1,ln.txt.length-1);
+      let delta = ln.nat>width ? width-ln.nat : (justify && !ln.last && !ln.head && (width-ln.nat)<width*0.16 ? width-ln.nat : 0);   // never stretch a line more than 16%
+      if(delta<0) s.setAttribute('letter-spacing',(delta/chars).toFixed(3));                         // tighten evenly
+      else if(delta>0){ const ws=ln.gaps? delta*0.7/ln.gaps : 0, ls=(delta-ws*ln.gaps)/chars;      // loosen mostly between words
+        if(ws) s.setAttribute('word-spacing',ws.toFixed(3)); s.setAttribute('letter-spacing',ls.toFixed(3)); }
+      el.appendChild(s); y+=L.line; });
     return y-L.line;
   }
   function build(){
