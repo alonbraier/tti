@@ -8164,7 +8164,7 @@ const G = {
   list:{ x:610.3, y:76.4, step:64.4, rowH:42.1, tabW:403, textX:12.4, font:30 },
   tags:{ x:621.6, y:825.6, step:86.7, w:375.1, h:46.9, font:19.4 },
   card:{ x:1090.6, y:76.4, w:740.1, h:1229.6, r:26.6, img:{x:1150,y:107,w:663,h:1174} },
-  right:{ x:1911, logoY:76.4, logoH:300, taglineY:384, taglineFont:35.9, textY:462, textW:455, textBottom:1085, textFont:20, lineH:23.3,
+  right:{ x:1911, logoY:76.4, logoH:300, taglineY:384, taglineFont:35.9, textY:462, textW:455, textBottom:1085, textFont:20, lineH:24,
           listenY:1107.5, listenFont:22.1, sampleY:1173.3, sampleW:454.3, sampleH:132.8, mailY:1203.8 },
   wipLabel:{ x:1317.1, y:593, font:30 }
 };
@@ -8399,14 +8399,14 @@ const INK = { body:0, head:0, rough:0.6 };
 <script>
 /* ---------- the sidebar letter (right column). Edit the paragraphs here; the lines wrap themselves to the column ---------- */
 const SIDEBAR_LETTER = [
-  'It’s midday, the sun is up, and you’re walking on the grass when you stumble upon a suitcase full of weird little instruments.',
-  'Greetings, you have found it: the garden of TTI. The garden of “ooh, what’s that sound?” but also “omg, make it stop beeping!”',
-  'Cool sounds and noodling around with web instruments you can just click and play. Made to push the limits of your browser, but also just to enjoy and have fun. They might not behave like the synths and drum machines you know. This isn’t Keyboard Kingdom down at the strip mall. But don’t worry, no music theory or experience with electronic instruments needed.',
+  'It\u2019s midday, the sun is up, and you\u2019re walking on the grass when you stumble upon a suitcase full of weird little instruments.',
+  'Greetings, you have found it: the garden of TTI. The garden of \u201cooh, what\u2019s that sound?\u201d but also \u201comg, make it stop beeping!\u201d',
+  'Web instruments you can just click and play. They might not behave like the synths you know. This isn\u2019t Keyboard Kingdom down at the strip mall. But don\u2019t worry, no music theory needed.',
   'Let the knob twiddling begin! And help spread the word if you enjoyed your time.',
   'Peace out,'
 ];
 /* layout of the letter, in sidebar design units (set with tti-letter-tool.html). The left column runs at size 20 / lines 24 */
-const LETTER = { size:20, line:19, gap:10, width:222, top:0, sig:0 };
+const LETTER = { size:20, line:24, gap:24, width:222, top:0, sig:48 };
 (function(){
   const svg=document.getElementById('sidebarSvg');
   const t=[...document.querySelectorAll('#sidebarSvg text')].find(t=>t.getAttribute('transform')==='translate(278.7 460.3)'); if(!t) return;
