@@ -6292,19 +6292,16 @@ renderInstrumentGrid(document.getElementById('instrumentGrid'));
 // stroke (that's how the artwork draws them) — toggle sets both fill and stroke together
 // so the outline never disappears.
 (function(){
-  const cells = document.querySelectorAll('#Tulip_grid rect');
+  // the grid cells: the small 35x33 squares in the sidebar art (the design export dropped the Tulip_grid id)
+  const cells = [...document.querySelectorAll('#sidebarSvg rect')].filter(r=>{ const w=+r.getAttribute('width'), hh=+r.getAttribute('height'); return w>25 && w<45 && hh>25 && hh<45; });
   if (!cells.length) return;
+  const Y='rgb(255, 255, 0)', K='rgb(0, 0, 0)';
   cells.forEach(cell => {
     cell.style.cursor = 'pointer';
     cell.addEventListener('click', () => {
-      const isEmpty = cell.getAttribute('fill') === '#ff0';
-      if (isEmpty){
-        cell.setAttribute('fill', '#000');
-        cell.setAttribute('stroke', '#ff0');
-      } else {
-        cell.setAttribute('fill', '#ff0');
-        cell.setAttribute('stroke', '#000');
-      }
+      const filled = cell.getAttribute('fill') === K || cell.getAttribute('fill') === '#000';
+      cell.setAttribute('fill', filled ? Y : K);
+      cell.setAttribute('stroke', filled ? K : Y);
     });
   });
 })();
