@@ -54,6 +54,7 @@
       z-index:10;
     }
     #sidebarSvg{ width:100%; height:auto; display:block; }
+    #sidebarSvg .sb-insta{ cursor:pointer; } #sidebarSvg .sb-insta text{ fill:#000; font-family:'EB Garamond',serif; } #sidebarSvg .sb-insta:hover text{ fill:#555; }
     #paperGrain{ position:absolute; inset:0; z-index:2; pointer-events:none; mix-blend-mode:multiply; }
     .svg-wrap{
       width:var(--scene-w); min-width:0; margin:0 0 0 var(--sidebar-w);
@@ -8427,6 +8428,11 @@ const LETTER = { size:20, line:24, gap:24, width:200, newsWidth:190, top:0, sig:
   const t=[...document.querySelectorAll('#sidebarSvg text')].find(t=>t.getAttribute('transform')==='translate(278.7 460.3)'); if(!t) return;
   const sigParts=[...svg.querySelectorAll('[stroke-width="2.4"]')];      // the drawn signature
   const NS='http://www.w3.org/2000/svg';
+  // a small Instagram link under the signature, set in the caption's size; it moves with the signature
+  const ig=document.createElementNS(NS,'a'); ig.setAttribute('href','https://www.instagram.com/alonbraier/'); ig.setAttribute('target','_blank'); ig.setAttribute('rel','noopener'); ig.setAttribute('class','sb-insta');
+  ig.innerHTML='<text x="278.7" y="0" font-size="14px">Instagram: <tspan text-decoration="underline">@alonbraier</tspan></text>';
+  svg.appendChild(ig);
+  let sigBottom=null;
   // the news used to be outlined letters from the design file: hide those and set the same words as live text
   const outlined=[...svg.querySelectorAll('g')].find(g=>g.children.length>100 && [...g.children].every(c=>c.tagName==='path'));
   if(outlined) outlined.style.display='none';
@@ -8481,6 +8487,8 @@ const LETTER = { size:20, line:24, gap:24, width:200, newsWidth:190, top:0, sig:
     flow(news, SIDEBAR_NEWS, L.newsWidth, 31, L);
     const last=flow(t, SIDEBAR_LETTER, L.width, 278.7, L);
     const d=(last-576+L.top)+L.sig; sigParts.forEach(p=>p.style.transform=d?`translateY(${d}px)`:'');   // the signature follows "Peace out,"
+    if(sigBottom===null){ try{ sigBottom=Math.max(...sigParts.map(p=>{ const b=p.getBBox(); return b.y+b.height; })); }catch(e){ sigBottom=1236; } }
+    ig.firstChild.setAttribute('y',(sigBottom+d+24).toFixed(1));
   }
   window.__ttiLetter={ LETTER, get text(){return SIDEBAR_LETTER;}, get news(){return SIDEBAR_NEWS;},
     set(o,paras,newsParas){ Object.assign(LETTER,o||{}); if(paras){ SIDEBAR_LETTER.length=0; SIDEBAR_LETTER.push(...paras);} if(newsParas){ SIDEBAR_NEWS.length=0; SIDEBAR_NEWS.push(...newsParas);} build(); } };
