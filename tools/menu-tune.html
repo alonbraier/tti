@@ -8139,6 +8139,18 @@ addEventListener('resize',measure); addEventListener('load',measure); measure();
 /* ---------------- content: edit here ---------------- */
 const TAGS = ['meditative','rhythmic','eerie','dreamy','chaotic','abrasive'];
 const MAILING_URL = '#';            // the mailing list / newsletter sign-up link, when there is one
+// placeholder moods for the instruments still taking shape (change any time; they take part in the filter)
+const WIP_TAGS = {
+  2:['rhythmic','chaotic','abrasive'],   // TANTRUNOME, the rage machine
+  3:['eerie','dreamy'],
+  4:['chaotic','abrasive'],
+  5:['meditative','eerie'],
+  6:['rhythmic','eerie'],
+  7:['eerie','chaotic','abrasive'],
+  8:['dreamy','chaotic'],
+  9:['meditative','abrasive'],
+  10:['rhythmic','dreamy','eerie']
+};
 const MENU_CONTENT = [
   { num:1, name:'DADO', live:true,
     tags:['meditative','rhythmic','dreamy'],
@@ -8149,7 +8161,7 @@ const MENU_CONTENT = [
       'Meet your new ambient companion. Part six-step sequencer, part drum machine, paired with a small non-linear keyboard, DADO is a bunch of weird, funny ideas that somehow work together to create a peaceful, meditative atmosphere you can shape, explore and get lost in. It feels random, but there\u2019s a unique logic under the hood. It was made to spark your curiosity, and to counter what you\u2019d expect a sequencer and a keyboard to do.',
       'It started as a simple sketch of five abstract shapes, and a question: what would that sketch sound like? Its sound grew mostly out of the old Viscount organ my parents had when I was a kid: its percussive voices, its character, its two-story build. Noodling on it was my first time playing an electronic instrument. Later in life, that became a bit of an obsession.'
     ] },
-  ...[2,3,4,5,6,7,8,9,10].map(n=>({ num:n, name:'Instrument '+n, live:false, tags:[],
+  ...[2,3,4,5,6,7,8,9,10].map(n=>({ num:n, name:'Instrument '+n, live:false, tags:WIP_TAGS[n],
     tagline:'The instrument is taking shape',
     // PLACEHOLDER — a short line about what's coming, per instrument
     text:['Something new is being drawn, built and tuned. Check back soon, or leave your email below and you will hear about it first.'] }))
@@ -8252,17 +8264,8 @@ function cardArt(ins){
   return `<svg viewBox="${vb}"><g transform="${mapWip}"><g class="tm-blueprint">${ART[WIP_SHAPES[ins.num]]||ART.wip_outline||''}</g><g class="tm-num" transform="${numTransform(ins.num)}">${ART['num'+ins.num]||''}</g></g>${ghost?`<g class="tm-ghost">${ART['number1']||''}</g>`:''}</svg>`;
 }
 
-// in-progress instruments have no tags yet: each time you land on one, 2–3 random tags light up (just for show,
-// they don't take part in the filter), never the same set as the card before
-let shownFor=-1, shownTags=[];
-function pickWipTags(){
-  const prev=shownTags.join();
-  for(let k=0;k<20;k++){ const n=2+Math.floor(Math.random()*2), pool=[...TAGS].sort(()=>Math.random()-.5).slice(0,n);
-    if(pool.sort().join()!==prev){ shownTags=pool; return; } }
-}
 function render(){
   const ins = MENU_CONTENT[cur];
-  if(cur!==shownFor){ shownFor=cur; if(ins.live) shownTags=ins.tags.slice(); else pickWipTags(); }
   // list
   rows.forEach((r,i)=>{ const on=matches(MENU_CONTENT[i],selected); r.classList.toggle('is-current',i===cur); r.classList.toggle('is-dim',!on); r.classList.toggle('is-soon',!MENU_CONTENT[i].live); });
   layoutTab();
@@ -8271,7 +8274,7 @@ function render(){
     const test=new Set(selected); test.add(t);
     const possible = MENU_CONTENT.some(x=>matches(x,test));
     b.classList.toggle('is-selected', selected.has(t));
-    b.classList.toggle('is-mine', shownTags.includes(t) && !selected.has(t));
+    b.classList.toggle('is-mine', ins.tags.includes(t) && !selected.has(t));
     b.classList.toggle('is-dim', !possible && !selected.has(t)); });
   // card
   cardEl.classList.toggle('is-wip', !ins.live);
