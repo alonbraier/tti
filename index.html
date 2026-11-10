@@ -8252,8 +8252,17 @@ function cardArt(ins){
   return `<svg viewBox="${vb}"><g transform="${mapWip}"><g class="tm-blueprint">${ART[WIP_SHAPES[ins.num]]||ART.wip_outline||''}</g><g class="tm-num" transform="${numTransform(ins.num)}">${ART['num'+ins.num]||''}</g></g>${ghost?`<g class="tm-ghost">${ART['number1']||''}</g>`:''}</svg>`;
 }
 
+// in-progress instruments have no tags yet: each time you land on one, 2–3 random tags light up (just for show,
+// they don't take part in the filter), never the same set as the card before
+let shownFor=-1, shownTags=[];
+function pickWipTags(){
+  const prev=shownTags.join();
+  for(let k=0;k<20;k++){ const n=2+Math.floor(Math.random()*2), pool=[...TAGS].sort(()=>Math.random()-.5).slice(0,n);
+    if(pool.sort().join()!==prev){ shownTags=pool; return; } }
+}
 function render(){
   const ins = MENU_CONTENT[cur];
+  if(cur!==shownFor){ shownFor=cur; if(ins.live) shownTags=ins.tags.slice(); else pickWipTags(); }
   // list
   rows.forEach((r,i)=>{ const on=matches(MENU_CONTENT[i],selected); r.classList.toggle('is-current',i===cur); r.classList.toggle('is-dim',!on); r.classList.toggle('is-soon',!MENU_CONTENT[i].live); });
   layoutTab();
@@ -8262,7 +8271,7 @@ function render(){
     const test=new Set(selected); test.add(t);
     const possible = MENU_CONTENT.some(x=>matches(x,test));
     b.classList.toggle('is-selected', selected.has(t));
-    b.classList.toggle('is-mine', ins.tags.includes(t) && !selected.has(t));
+    b.classList.toggle('is-mine', shownTags.includes(t) && !selected.has(t));
     b.classList.toggle('is-dim', !possible && !selected.has(t)); });
   // card
   cardEl.classList.toggle('is-wip', !ins.live);
