@@ -383,7 +383,8 @@ html.tti-in-case, html.tti-in-case body{ overflow:hidden !important; }
   #ttiMenu .tm-mail{ display:none; align-items:flex-start; color:#fff; text-decoration:none; line-height:1.17; }
   #ttiMenu .tm-mail svg{ flex:none; }
   #ttiMenu .tm-mail u{ text-decoration-thickness:1px; text-underline-offset:.18em; }
-  #ttiMenu .tm-mail:hover u{ color:#ff0; }
+  #ttiMenu .tm-mail a{ color:inherit; text-decoration:none; }
+  #ttiMenu .tm-mail a:hover u{ color:#ff0; }
   #ttiMenu .tm-right.is-wip .tm-listen, #ttiMenu .tm-right.is-wip .tm-sample{ display:none; }
   #ttiMenu .tm-right.is-wip .tm-mail{ display:flex; }
 
@@ -8143,7 +8144,8 @@ addEventListener('resize',measure); addEventListener('load',measure); measure();
 
 /* ---------------- content: edit here ---------------- */
 const TAGS = ['meditative','rhythmic','eerie','dreamy','chaotic','abrasive'];
-const MAILING_URL = '#';            // the mailing list / newsletter sign-up link, when there is one
+const MAILING_URL = '#';
+const INSTAGRAM_URL = 'https://www.instagram.com/alonbraier/';            // the mailing list / newsletter sign-up link, when there is one
 // placeholder moods for the instruments still taking shape (change any time; they take part in the filter)
 const WIP_TAGS = {
   2:['rhythmic','chaotic','abrasive'],   // TANTRUNOME, the rage machine
@@ -8236,9 +8238,8 @@ const listenEl = el('button','tm-listen',rightEl,
   `<svg viewBox="1909 1105.5 44 44">${ART.listen_icon||''}</svg><span>Have a listen</span>`); listenEl.type='button';
 const sampleEl = el('div','tm-sample',rightEl,
   `<svg viewBox="1910 1172.3 456.3 134.8" preserveAspectRatio="none">${ART.sample_bar||''}</svg><i class="tm-playhead"></i>`);
-const mailEl = el('a','tm-mail',rightEl,
-  `<svg viewBox="1909 1206 150 104">${ART.envelope||''}</svg><span>Want to know when the next instrument is ready?<br><u>Join the mailing list</u></span>`);
-mailEl.href=MAILING_URL; mailEl.target='_blank'; mailEl.rel='noopener';
+const mailEl = el('div','tm-mail',rightEl,
+  `<svg viewBox="1909 1206 150 104">${ART.envelope||''}</svg><span>Want to know when the next instrument is ready?<br><a href="${MAILING_URL}" target="_blank" rel="noopener"><u>Join the mailing list</u></a> or <a href="${INSTAGRAM_URL}" target="_blank" rel="noopener"><u>follow along on Instagram</u></a></span>`);
 
 /* ---------------- state ---------------- */
 let cur=0; const selected=new Set();
