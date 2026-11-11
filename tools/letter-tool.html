@@ -54,7 +54,7 @@
       z-index:10;
     }
     #sidebarSvg{ width:100%; height:auto; display:block; }
-    #sidebarSvg .sb-insta{ cursor:pointer; } #sidebarSvg .sb-insta text{ fill:#000; font-family:'EB Garamond',serif; opacity:0; transition:opacity .25s; } #sidebarSvg .sb-insta:hover text, #sidebarSvg .sb-insta:focus text{ opacity:1; }
+    #sidebarSvg .sb-insta{ cursor:pointer; } #sidebarSvg.sig-hover [stroke-width="2.4"]{ animation:sigShimmer 1.1s ease-in-out infinite; } @keyframes sigShimmer{ 0%,100%{ stroke-width:2.4; opacity:1; } 50%{ stroke-width:3.4; opacity:.65; } }
     #paperGrain{ position:absolute; inset:0; z-index:2; pointer-events:none; mix-blend-mode:multiply; }
     .svg-wrap{
       width:var(--scene-w); min-width:0; margin:0 0 0 var(--sidebar-w);
@@ -7962,6 +7962,12 @@ function setY(y,anim){ onMove(y, anim?700:0); Y=y; sheet.style.transition=anim?'
 function expand(){ expanded=true; sheet.classList.remove('is-collapsed'); sheet.classList.add('was-opened'); setY(0,true); }
 function collapse(){ expanded=false; sheet.classList.add('is-collapsed'); scroll.scrollTop=0; setY(collapsedY,true); }
 window.__ttiSheet={expand,collapse};
+// the little jump: while the sheet rests and has never been opened, it hops up a bit every few seconds to say "pull me"
+let hopT=0;
+function hop(){ if(!mq.matches || expanded || dragging || sheet.classList.contains('was-opened')) return;
+  sheet.style.transition='transform .28s cubic-bezier(.3,.7,.4,1)'; sheet.style.transform='translateY('+(collapsedY-22)+'px)';
+  setTimeout(()=>{ if(expanded||dragging) return; sheet.style.transition='transform .55s cubic-bezier(.34,1.56,.64,1)'; sheet.style.transform='translateY('+collapsedY+'px)'; },280); }
+setTimeout(()=>{ hop(); hopT=setInterval(hop,4200); },2400);
 
 // drag: anywhere on the sheet while it rests below; while open, by the handle — or pull down when the content is at its top
 let sy=null, sx=null, y0=0, lastY=0, lastT=0, vel=0, mode=null;
@@ -8294,7 +8300,8 @@ const LETTER = { size:20, line:24, gap:24, width:200, newsWidth:190, top:0, sig:
   const NS='http://www.w3.org/2000/svg';
   // a small Instagram link under the signature, set in the caption's size; it moves with the signature
   const ig=document.createElementNS(NS,'a'); ig.setAttribute('href','https://www.instagram.com/alonbraier/'); ig.setAttribute('target','_blank'); ig.setAttribute('rel','noopener'); ig.setAttribute('class','sb-insta');
-  ig.innerHTML='<rect class="sb-hit" fill="transparent"/><text x="278.7" y="0" font-size="14px">@alonbraier on Instagram</text>';   // the signature itself is the link; the handle shows on hover
+  ig.innerHTML='<title>@alonbraier on Instagram</title><rect class="sb-hit" fill="transparent"/>';   // the signature itself is the link; the ink shimmers on hover
+  ig.addEventListener('mouseenter',()=>svg.classList.add('sig-hover')); ig.addEventListener('mouseleave',()=>svg.classList.remove('sig-hover'));
   svg.appendChild(ig);
   let sigBottom=null, sigBox=null;
   // the news used to be outlined letters from the design file: hide those and set the same words as live text
@@ -8353,7 +8360,6 @@ const LETTER = { size:20, line:24, gap:24, width:200, newsWidth:190, top:0, sig:
     const d=(last-576+L.top)+L.sig; sigParts.forEach(p=>p.style.transform=d?`translateY(${d}px)`:'');   // the signature follows "Peace out,"
     if(sigBottom===null){ try{ const bs=sigParts.map(p=>p.getBBox()); sigBox={x:Math.min(...bs.map(b=>b.x)), y:Math.min(...bs.map(b=>b.y))}; sigBottom=Math.max(...bs.map(b=>b.y+b.height)); sigBox.r=Math.max(...bs.map(b=>b.x+b.width)); }catch(e){ sigBottom=1236; sigBox={x:256,y:1130,r:476}; } }
     const hit=ig.querySelector('.sb-hit'); hit.setAttribute('x',sigBox.x-6); hit.setAttribute('y',sigBox.y+d-6); hit.setAttribute('width',sigBox.r-sigBox.x+12); hit.setAttribute('height',sigBottom-sigBox.y+40);
-    ig.querySelector('text').setAttribute('y',(sigBottom+d+24).toFixed(1));
   }
   window.__ttiLetter={ LETTER, get text(){return SIDEBAR_LETTER;}, get news(){return SIDEBAR_NEWS;},
     set(o,paras,newsParas){ Object.assign(LETTER,o||{}); if(paras){ SIDEBAR_LETTER.length=0; SIDEBAR_LETTER.push(...paras);} if(newsParas){ SIDEBAR_NEWS.length=0; SIDEBAR_NEWS.push(...newsParas);} build(); } };
