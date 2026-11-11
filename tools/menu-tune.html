@@ -8360,6 +8360,18 @@ const LETTER = { size:20, line:24, gap:24, width:200, newsWidth:190, top:0, sig:
   build(); if(document.fonts&&document.fonts.ready) document.fonts.ready.then(build);
 })();
 </script>
+
+<script>
+/* ---------- desktop-only nudges from the scene position tool (scene units) ---------- */
+const DESK_NUDGE = { Stump:[40,0], Leaf02:[40,0], Leaf01:[40,0] };
+(function(){
+  const NS='http://www.w3.org/2000/svg', mq=matchMedia('(min-width:1024px)'), wraps=[];
+  for(const id in DESK_NUDGE){ const el=document.getElementById(id); if(!el) continue;
+    const w=document.createElementNS(NS,'g'); el.parentNode.insertBefore(w,el); w.appendChild(el); wraps.push([w,DESK_NUDGE[id]]); }
+  const apply=()=>wraps.forEach(([w,[x,y]])=>{ if(mq.matches) w.setAttribute('transform',`translate(${x},${y})`); else w.removeAttribute('transform'); });
+  apply(); mq.addEventListener ? mq.addEventListener('change',apply) : mq.addListener(apply);
+})();
+</script>
 <div id="tune" style="position:fixed;right:12px;bottom:12px;max-height:calc(100vh - 24px);overflow:auto;z-index:99999;width:270px;background:#fff;color:#000;font:13px/1.35 system-ui,sans-serif;border:2px solid #000;border-radius:8px;padding:10px 12px;box-shadow:4px 4px 0 #000">
   <b style="font-size:14px">Menu tuning</b>
   <div style="display:flex;gap:6px;align-items:center;margin:8px 0">
