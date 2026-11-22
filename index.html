@@ -372,6 +372,10 @@ html.tti-in-case, html.tti-in-case body{ overflow:hidden !important; }
 
   /* the card */
   #ttiMenu .tm-card{ position:absolute; overflow:hidden; cursor:pointer; }
+  #ttiMenu .tm-card.is-wip{ cursor:default; }
+  #ttiMenu .tm-play{ position:absolute; left:50%; top:50%; transform:translate(-50%,-50%) scale(.96); padding:.25em 1em .3em; border-radius:999px;
+    background:#000; color:#fff; font-size:clamp(18px,1.6vw,30px); letter-spacing:.02em; opacity:0; transition:opacity .2s, transform .2s; pointer-events:none; }
+  #ttiMenu .tm-card:not(.is-wip):hover .tm-play{ opacity:1; transform:translate(-50%,-50%) scale(1); }
   #ttiMenu .tm-card.is-wip{ cursor:default; box-shadow:inset 0 0 0 1px #fff; }
   #ttiMenu .tm-card-art{ position:absolute; inset:0; }
   #ttiMenu .tm-card.is-in .tm-card-art{ animation:tmIn .26s ease-out; }
@@ -8106,6 +8110,7 @@ const cardEl = el('div','tm-card',root);
 const cardSvgHost = el('div','tm-card-art',cardEl);
 const wipLabel = el('div','tm-wip-label',cardEl,'WORK IN PROGRESS');
 cardEl.addEventListener('click',()=>{ const ins=MENU_CONTENT[cur]; if(ins.live && ins.url) location.href=ins.url; });
+const playHint = el('div','tm-play',cardEl,'Play');      // shows in the middle of a live card on hover
 
 // right column
 const rightEl = el('div','tm-right',root);
