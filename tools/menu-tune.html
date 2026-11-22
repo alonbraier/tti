@@ -7880,7 +7880,8 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 /* ---------- one card at a time: the same cards as the desktop menu (colored DADO, silhouettes for the rest) ---------- */
 let cur=1;
 function show(k){
-  cur=((k-1+10)%10)+1;
+  const D0=window.__ttiMenuData, OPEN=D0 ? D0.content.filter(i=>!i.locked).length : 2;
+  cur=((k-1+OPEN*10)%OPEN)+1;
   stopListen();
   const D=window.__ttiMenuData; if(!D) return;
   const ins=D.content[cur-1], live=!!ins.live;
@@ -8021,9 +8022,11 @@ addEventListener('resize',measure); addEventListener('load',measure); measure();
 const TAGS = ['meditative','rhythmic','eerie','dreamy','chaotic','abrasive'];
 const MAILING_URL = '#';
 const INSTAGRAM_URL = 'https://www.instagram.com/alonbraier/';            // the mailing list / newsletter sign-up link, when there is one
+// temporary names; only 02 can be opened for now, 03-10 sit greyed out in the list (locked)
+const WIP_NAMES = { 2:'DIMI', 3:'FOAMO', 4:'GARDEN', 5:'BONBON', 6:'SANDEL', 7:'NOI', 8:'TELEPHONO', 9:'PARSEC', 10:'ZAATAR' };
 // placeholder moods for the instruments still taking shape (change any time; they take part in the filter)
 const WIP_TAGS = {
-  2:['rhythmic','chaotic','abrasive'],   // TANTRUNOME, the rage machine
+  2:['eerie','chaotic','abrasive'],      // the open placeholder: the three moods DADO doesn't have
   3:['eerie','dreamy'],
   4:['chaotic','abrasive'],
   5:['meditative','eerie'],
@@ -8043,7 +8046,7 @@ const MENU_CONTENT = [
       'Meet your new ambient companion. Part six-step sequencer, part drum machine, paired with a small non-linear keyboard, DADO is a bunch of weird, funny ideas that somehow work together to create a peaceful, meditative atmosphere you can shape, explore and get lost in. It feels random, but there\u2019s a unique logic under the hood. It was made to spark your curiosity, and to counter what you\u2019d expect a sequencer and a keyboard to do.',
       'It started as a simple sketch of five abstract shapes, and a question: what would that sketch sound like? Its sound grew mostly out of the old Viscount organ my parents had when I was a kid: its percussive voices, its character, its two-story build. Noodling on it was my first time playing an electronic instrument. Later in life, that became a bit of an obsession.'
     ] },
-  ...[2,3,4,5,6,7,8,9,10].map(n=>({ num:n, name:'Instrument '+n, live:false, tags:WIP_TAGS[n],
+  ...[2,3,4,5,6,7,8,9,10].map(n=>({ num:n, name:WIP_NAMES[n], live:false, locked:n>2, tags:WIP_TAGS[n],
     tagline:'The instrument is taking shape',
     // PLACEHOLDER — a short line about what's coming, per instrument
     text:['Something new is being drawn, built and tuned. Check back soon, or leave your email below and you will hear about it first.'] }))
@@ -8118,7 +8121,7 @@ const mailEl = el('div','tm-mail',rightEl,
 
 /* ---------------- state ---------------- */
 let cur=0; const selected=new Set();
-const matches = (ins,set)=>[...set].every(t=>ins.tags.includes(t));
+const matches = (ins,set)=>!ins.locked && [...set].every(t=>ins.tags.includes(t));   // locked instruments can't be chosen
 function visibleIdx(){ return MENU_CONTENT.map((ins,i)=>i).filter(i=>matches(MENU_CONTENT[i],selected)); }
 function toggleTag(t){
   if(selected.has(t)) selected.delete(t); else { const test=new Set(selected); test.add(t); if(!MENU_CONTENT.some(ins=>matches(ins,test))) return; selected.add(t); }
