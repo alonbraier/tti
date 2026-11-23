@@ -262,6 +262,18 @@
 .m-card2.is-in .m-card-art{ animation:mIn .26s ease-out; } @keyframes mIn{ from{opacity:0} to{opacity:1} }
 .m-wip-label{ position:absolute; left:0; right:0; text-align:center; letter-spacing:.03em; font-size:15px; color:#fff; display:none; pointer-events:none; }
 .m-card2.is-wip .m-wip-label{ display:block; }
+.m-play-hint{ position:absolute; left:50%; top:50%; transform:translate(-50%,-50%) scale(.96); padding:5px 20px 6px; border-radius:999px; background:#000; color:#fff;
+  font-size:19px; letter-spacing:.02em; opacity:0; pointer-events:none; }
+.m-card2.is-wip .m-play-hint{ display:none; }
+.m-play-hint.flash{ animation:mPlayFlash 2.2s ease-in-out; }
+@keyframes mPlayFlash{ 0%{opacity:0; transform:translate(-50%,-50%) scale(.94)} 22%{opacity:1; transform:translate(-50%,-50%) scale(1)} 70%{opacity:1} 100%{opacity:0; transform:translate(-50%,-50%) scale(1)} }
+#ms_aboutPop{ position:absolute; inset:38px 0 0 0; z-index:5; background:#000; color:#fff; font-family:'EB Garamond',serif; font-size:17px; line-height:1.35; overflow-y:auto; opacity:0; visibility:hidden; transition:opacity .35s, visibility 0s .35s; }
+#ms_aboutPop.is-open{ opacity:1; visibility:visible; transition:opacity .35s; }
+#ms_aboutPop .ab-inner{ padding:26px 26px 40px; max-width:520px; margin:0 auto; }
+#ms_aboutPop p{ margin:0 0 14px; }
+#ms_aboutPop .ab-sig{ display:block; width:150px; height:auto; margin:4px 0 22px; }
+#ms_aboutPop .ab-sig *{ stroke:#fff !important; fill:none !important; }
+#ms_aboutPop .ab-ok{ display:block; padding:8px 26px; border:1px solid #fff; border-radius:12px; background:none; color:#fff; font:inherit; font-size:17px; cursor:pointer; }
 .m-play{ display:block; margin:16px auto 0; padding:9px 22px; border:1px solid #fff; border-radius:12px; background:none; color:#fff; font:inherit; font-size:17px; cursor:pointer; }
 .m-play[hidden]{ display:none; }
 .m-info .m-name{ font-size:26px; margin:0 0 4px; }
@@ -7835,12 +7847,11 @@ const BEND_MAX=2;   // semitones at full pull (pulling down bends the pitch down
   <div class="m-deck" id="ms_deck">
     <button class="m-arrow" id="ms_prev" type="button" aria-label="Previous instrument"><svg viewBox="0 0 40 96" aria-hidden="true"><polyline points="27 38 13 48 27 58" fill="none" stroke="#fff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     <div class="m-card">
-      <div class="m-card2" id="ms_card2"><div class="m-card-art" id="ms_cardHost"></div><div class="m-wip-label" id="ms_wipLabel">WORK IN PROGRESS</div></div>
+      <div class="m-card2" id="ms_card2"><div class="m-card-art" id="ms_cardHost"></div><div class="m-wip-label" id="ms_wipLabel">WORK IN PROGRESS</div><div class="m-play-hint" id="ms_playHint">Play</div></div>
     </div>
     <button class="m-arrow" id="ms_next" type="button" aria-label="Next instrument"><svg viewBox="0 0 40 96" aria-hidden="true"><polyline points="13 38 27 48 13 58" fill="none" stroke="#fff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
   </div>
 
-  <button class="m-play" id="ms_mPlay" type="button">Play the instrument</button>
   <section class="m-info" id="ms_info">
     <div class="m-logo" id="ms_logo"><svg class="m-logo-svg" viewBox="1912 44 318 220" xmlns="http://www.w3.org/2000/svg"><path xmlns:xlink="http://www.w3.org/1999/xlink" class="st15" d="M1916.1,47.3c31.3,0,56.7,47.8,56.7,106.7s-25.4,106.7-56.7,106.7V47.3Z"/>
         <path xmlns:xlink="http://www.w3.org/1999/xlink" class="st15" d="M2047.3,47.3c31.3,0,56.7,47.8,56.7,106.7s-25.4,106.7-56.7,106.7V47.3Z"/>
@@ -7854,11 +7865,14 @@ const BEND_MAX=2;   // semitones at full pull (pulling down bends the pitch down
   </section>
 
   
-  <section class="m-intro" id="ms_about">
-    <h3 style="font-weight:500;font-size:19px;margin:0 0 10px;">About</h3>
+  <footer class="m-foot">© 2026 Alon Braier · Ten Tiny Instruments</footer>
+</div>
+<div id="ms_aboutPop" aria-hidden="true">
+  <div class="ab-inner">
     <div id="ms_aboutText"></div>
-  </section>
-  <footer class="m-foot">© Alon Braier · Ten Tiny Instruments</footer>
+    <svg class="ab-sig" id="ms_aboutSig" viewBox="250 1050 232 122" aria-label="Alon Braier"></svg>
+    <button class="ab-ok" id="ms_aboutOk" type="button">OK</button>
+  </div>
 </div>
   </div>
 </div>
@@ -7892,7 +7906,6 @@ function show(k){
   const c=$('card2'); c.classList.toggle('is-wip',!live); c.style.background = live ? (ins.card&&ins.card.color||'#ffb3c1') : '#000';
   c.classList.remove('is-in'); void c.offsetWidth; $('cardHost').innerHTML=D.cardArt(ins); c.classList.add('is-in');
   $('wipLabel').style.top=(D.labelY*100).toFixed(2)+'%';
-  $('mPlay').hidden=!live;
   $('logo').style.display = live ? '' : 'none';
   $('listen').style.display = live ? '' : 'none';
   $('tag').innerHTML = live ? (ins.tagline||'') : '<div class="m-name">'+esc(ins.name)+'</div>'+esc(ins.tagline||'');
@@ -7902,7 +7915,7 @@ function show(k){
 }
 document.addEventListener('tti-menu-ready',()=>show(cur));
 addEventListener('load',()=>{ show(cur);
-  const L=window.__ttiLetter; if(L) $('aboutText').innerHTML=L.text.map(p=>'<p>'+esc(p)+'</p>').join('')+'<p>Alon Braier</p>';
+  const L=window.__ttiLetter; if(L) $('aboutText').innerHTML=L.text.map(p=>'<p>'+esc(p)+'</p>').join('');   // the drawn signature follows
   const D=window.__ttiMenuData; if(D) $('lnkIg').href=D.INSTAGRAM_URL; $('lnkIg').target='_blank'; $('lnkIg').rel='noopener'; });
 $('card2').addEventListener('click',()=>{ const D=window.__ttiMenuData, i=D&&D.content[cur-1]; if(i&&i.live&&i.url) location.href=i.url; });
 $('prev').addEventListener('click',()=>show(cur-1));
@@ -7912,9 +7925,29 @@ const deck=$('deck');
 deck.addEventListener('touchstart',e=>{ x0=e.touches[0].clientX; y0=e.touches[0].clientY; },{passive:true});
 deck.addEventListener('touchend',e=>{ if(x0===null) return; const dx=e.changedTouches[0].clientX-x0, dy=e.changedTouches[0].clientY-y0; x0=null;
   if(Math.abs(dx)>48 && Math.abs(dx)>1.6*Math.abs(dy)) show(cur+(dx<0?1:-1)); },{passive:true});
-$('mPlay').addEventListener('click',()=>{ const D=window.__ttiMenuData, i=D&&D.content[cur-1]; if(i&&i.live&&i.url) location.href=i.url; });
 
-$('lnkAbout').addEventListener('click',e=>{ e.preventDefault(); $('about').scrollIntoView({behavior:'smooth'}); });
+/* ---------- About: opens over the sheet with a fade; OK or a double tap closes it ---------- */
+const pop=$('aboutPop'); document.getElementById('mSheet').appendChild(pop);   // over the whole sheet, not inside its scroll
+function openAbout(){ pop.classList.add('is-open'); pop.setAttribute('aria-hidden','false'); pop.scrollTop=0; }
+function closeAbout(){ pop.classList.remove('is-open'); pop.setAttribute('aria-hidden','true'); }
+$('lnkAbout').addEventListener('click',e=>{ e.preventDefault(); if(window.__ttiSheet && !document.getElementById('mSheet').classList.contains('was-opened')) window.__ttiSheet.expand(); openAbout(); });
+$('aboutOk').addEventListener('click',closeAbout);
+let lastTap=0; pop.addEventListener('touchend',e=>{ const t=Date.now(); if(t-lastTap<320){ e.preventDefault(); closeAbout(); } lastTap=t; });
+pop.addEventListener('dblclick',closeAbout);
+addEventListener('load',()=>{ const sig=[...document.querySelectorAll('#sidebarSvg [stroke-width="2.4"]')];      // your drawn signature, from the sidebar
+  $('aboutSig').innerHTML=sig.map(p=>{ const c=p.cloneNode(true); c.removeAttribute('style'); return c.outerHTML; }).join(''); });
+
+/* ---------- "Play" on DADO's card: there's no hover on a phone, so it flashes softly
+   2 s after the card comes into view, then again after every 5 s without a touch ---------- */
+let playT=0;
+function cardVisible(){ return parseFloat($('deck').style.opacity||0)>0.9 && !pop.classList.contains('is-open'); }
+function flashPlay(){ const D=window.__ttiMenuData, i=D&&D.content[cur-1], el=$('playHint');
+  if(i&&i.live&&cardVisible()){ el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash'); }
+  schedulePlay(5000); }
+function schedulePlay(ms){ clearTimeout(playT); playT=setTimeout(flashPlay,ms); }
+let wasVisible=false;
+setInterval(()=>{ const v=cardVisible(); if(v && !wasVisible) schedulePlay(2000); wasVisible=v; },250);   // the card just came into view
+$('scroll').addEventListener('touchstart',()=>{ if(cardVisible()) schedulePlay(5000); },{passive:true});
 
 /* ---------- "Have a listen": DADO's sound bite ---------- */
 const sample=new Audio(window.__ttiSampleSrc||'assets/dado-sample.mp3'); sample.preload='none';
