@@ -68,7 +68,6 @@
   .tti-arrow-r{ animation:ttiArrowR .9s ease-in-out infinite alternate; }
   @keyframes ttiArrowL{ from{ transform:translate(-3px,-3px); } to{ transform:translate(3px,3px); } }
   @keyframes ttiArrowR{ from{ transform:translate(3px,-3px); } to{ transform:translate(-3px,3px); } }
-  .tti-note{ pointer-events:none; }
   body.pe-editing .tti-note, body.pe-editing .tti-arrow{ pointer-events:auto; }   /* selectable in the placement editor (E) */
   @keyframes switchPulse {
     0%,100% { opacity:1; }
@@ -4783,7 +4782,7 @@ html.tti-in-case, html.tti-in-case body{ overflow:hidden !important; }
     <ellipse id="antThorax" fill="#ff639d" stroke="#000" stroke-miterlimit="10" cx="176.5" cy="1644.3" rx="32.7" ry="22.5"/>
     <ellipse id="antHead" fill="#ff639d" stroke="#000" stroke-miterlimit="10" cx="176" cy="1615.2" rx="13.7" ry="14.8"/>
   </g>
-<g id="Main_note">
+<g id="Main_note" class="suitcase-switch">
     <g>
       <g>
         <rect fill="#fff" x="353.7" y="900.1" width="429.3" height="523.4"/>
@@ -4999,7 +4998,7 @@ html.tti-in-case, html.tti-in-case body{ overflow:hidden !important; }
 </g>
 
 <!-- the yellow note on the briefcase: open it to enter TTI -->
-<g id="tti_note" class="tti-note" transform="translate(-96,0)">
+<g id="tti_note" class="tti-note suitcase-switch" transform="translate(-96,0)">
     <g>
       <polygon fill="#ff0" stroke="#000" stroke-miterlimit="10" stroke-width=".8" points="426.8 1470.3 266.9 1435.1 285.6 1350.3 297.6 1295.6 457.5 1330.8 426.8 1470.3"/>
       <g>
