@@ -6093,6 +6093,7 @@ function snare(){
 
 // Mechanical latch "ka-chuck" with a decaying click echo
 function latchClick(){
+  if (!window.__ttiPlayed) return;   // silent unless the visitor has already played the letters: nobody gets startled
   const a = ac();
   function hit(offset, vol, freq, noiseDur){
     const n = a.currentTime + offset;
@@ -6122,7 +6123,7 @@ function latchClick(){
   }
   // "ka-chuck" — the latch catching, with a single short tail hit;
   // the analog delay above supplies the trailing echo character
-  const V = 0.45;   // overall latch loudness (was 1)
+  const V = 0.4275;   // overall latch loudness (was 1, then 0.45; 5% softer)
   hit(0,     0.5*V,  420, 0.025);
   hit(0.045, 0.55*V, 340, 0.03);
   hit(0.11,  0.22*V, 480, 0.016);
@@ -7415,7 +7416,8 @@ function boot(){
   toneHP=ac.createBiquadFilter(); toneHP.type='highpass'; toneHP.frequency.value=20; toneHP.Q.value=0.9;
   outBus=ac.createGain(); outBus.gain.value=powerOff?0:1;   // starts muted if the switch is already off
   diveGain=ac.createGain(); diveGain.gain.value=diveOn?0:1;
-  toneLP.connect(toneHP).connect(diveGain).connect(outBus).connect(ac.destination);
+  const master=ac.createGain(); master.gain.value=1.1;           // the garden's music, 10% louder (Alon's ears)
+  toneLP.connect(toneHP).connect(diveGain).connect(outBus).connect(master).connect(ac.destination);
   master.connect(dry).connect(toneLP);
   master.connect(damp).connect(verb).connect(wet).connect(toneLP);
   // drier bus for close/intimate sounds (radio) — mostly dry, tiny verb send
@@ -7730,7 +7732,7 @@ $('knob_indicators').remove();   // the little meters under the pink knobs are g
 // "ready to play": until the first touch on any control, or until the arp starts, the first arp light blinks
 // and the square buttons' lights breathe softly. Then it all goes back to normal for good.
 let invite=true;
-document.addEventListener('pointerdown',e=>{ if(invite && e.target.closest && e.target.closest('.tc-tap,.tc-hit')) invite=false; },true);
+document.addEventListener('pointerdown',e=>{ if(e.target.closest && e.target.closest('.tc-tap,.tc-hit')){ invite=false; window.__ttiPlayed=true; } },true);   // __ttiPlayed: the visitor has played the letters
 const inviteOn=()=>{ if(invite && running) invite=false; return invite; };
 
 /* ======================= 2. arp knobs (first T): turn on their centre, pointer line shows the value ======================= */
