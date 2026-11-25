@@ -64,10 +64,10 @@
   .suitcase-switch { cursor:pointer; }
   /* the arrows sway slowly toward the briefcase and back */
   .tti-arrow{ transform-box:fill-box; pointer-events:none; }
-  .tti-arrow-l{ animation:ttiArrowL 1.8s ease-in-out infinite alternate; }
-  .tti-arrow-r{ animation:ttiArrowR 1.8s ease-in-out infinite alternate; }
-  @keyframes ttiArrowL{ from{ transform:translate(-7px,-7px); } to{ transform:translate(7px,7px); } }
-  @keyframes ttiArrowR{ from{ transform:translate(7px,-7px); } to{ transform:translate(-7px,7px); } }
+  .tti-arrow-l{ animation:ttiArrowL .9s ease-in-out infinite alternate; }
+  .tti-arrow-r{ animation:ttiArrowR .9s ease-in-out infinite alternate; }
+  @keyframes ttiArrowL{ from{ transform:translate(-3px,-3px); } to{ transform:translate(3px,3px); } }
+  @keyframes ttiArrowR{ from{ transform:translate(3px,-3px); } to{ transform:translate(-3px,3px); } }
   .tti-note{ pointer-events:none; }
   body.pe-editing .tti-note, body.pe-editing .tti-arrow{ pointer-events:auto; }   /* selectable in the placement editor (E) */
   @keyframes switchPulse {
@@ -4999,7 +4999,7 @@ html.tti-in-case, html.tti-in-case body{ overflow:hidden !important; }
 </g>
 
 <!-- the yellow note and two arrows pointing at the briefcase: open it to enter TTI -->
-<g id="tti_note" class="tti-note">
+<g id="tti_note" class="tti-note" transform="translate(-96,0)">
     <g>
       <polygon fill="#ff0" stroke="#000" stroke-miterlimit="10" stroke-width=".8" points="426.8 1470.3 266.9 1435.1 285.6 1350.3 297.6 1295.6 457.5 1330.8 426.8 1470.3"/>
       <g>
@@ -5033,8 +5033,8 @@ html.tti-in-case, html.tti-in-case body{ overflow:hidden !important; }
       </g>
     </g>
   </g>
-<g id="tti_arrow_left" class="tti-arrow tti-arrow-l"><polygon fill="#ff0" stroke="#000" stroke-miterlimit="10" stroke-width=".8" points="186.3 1449.7 169.5 1468.3 184.4 1481.1 173.8 1492.9 216.8 1498.1 209.7 1457 201 1467.4 186.3 1449.7"/></g>
-<g id="tti_arrow_right" class="tti-arrow tti-arrow-r"><polygon fill="#ff0" stroke="#000" stroke-miterlimit="10" stroke-width=".8" points="1191.2 1469.4 1172.6 1452.7 1159.8 1467.6 1148.1 1457 1141.9 1498 1184 1492.9 1173.5 1484.2 1191.2 1469.4"/></g>
+<g id="tti_arrow_left" class="tti-arrow tti-arrow-l"><polygon fill="#ff0" stroke="#000" stroke-miterlimit="10" stroke-width=".8" points="76.3 1449.7 59.5 1468.3 74.4 1481.1 63.8 1492.9 106.8 1498.1 99.7 1457.0 91.0 1467.4 76.3 1449.7"/></g>
+<g id="tti_arrow_right" class="tti-arrow tti-arrow-r"><polygon fill="#ff0" stroke="#000" stroke-miterlimit="10" stroke-width=".8" points="1103.4 1449.7 1120.2 1468.3 1105.3 1481.1 1115.9 1492.9 1072.9 1498.1 1080.0 1457.0 1088.7 1467.4 1103.4 1449.7"/></g>
 </svg>
 </div>
 
