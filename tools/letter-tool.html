@@ -57,11 +57,18 @@
     #sidebarSvg .sb-insta{ cursor:pointer; } #sidebarSvg.sig-hover [stroke-width="2.4"]{ animation:sigShimmer 1.1s ease-in-out infinite; } @keyframes sigShimmer{ 0%,100%{ stroke-width:2.4; opacity:1; } 50%{ stroke-width:3.4; opacity:.65; } }
     #paperGrain{ position:absolute; inset:0; z-index:2; pointer-events:none; mix-blend-mode:multiply; }
     .svg-wrap{
-      width:var(--scene-w); min-width:0; margin:0 0 0 var(--sidebar-w);
+      width:calc(100% - var(--sidebar-w)); min-width:0; margin:0 0 0 var(--sidebar-w);   /* the garden fills the space next to the sidebar; its framing is set in applySceneCrop */
     }
   }
 
   .suitcase-switch { cursor:pointer; }
+  /* the arrows sway slowly toward the briefcase and back */
+  .tti-arrow{ transform-box:fill-box; pointer-events:none; }
+  .tti-arrow-l{ animation:ttiArrowL 1.8s ease-in-out infinite alternate; }
+  .tti-arrow-r{ animation:ttiArrowR 1.8s ease-in-out infinite alternate; }
+  @keyframes ttiArrowL{ from{ transform:translate(-7px,-7px); } to{ transform:translate(7px,7px); } }
+  @keyframes ttiArrowR{ from{ transform:translate(7px,-7px); } to{ transform:translate(-7px,7px); } }
+  .tti-note{ pointer-events:none; }
   @keyframes switchPulse {
     0%,100% { opacity:1; }
     50% { opacity:0.55; }
@@ -402,7 +409,7 @@ html.tti-in-case, html.tti-in-case body{ overflow:hidden !important; }
   #ttiMenu .tm-right > *{ position:absolute; left:0; }
   #ttiMenu .tm-tagline{ font-weight:600; line-height:1.15; white-space:nowrap; }
   #ttiMenu .tm-text{ width:100%; overflow:hidden; }
-  #ttiMenu .tm-text p{ margin:0 0 1.2em; }
+  #ttiMenu .tm-text p{ margin:0 0 1.2em; font-size:inherit; line-height:inherit; }
   #ttiMenu .tm-listen{ display:flex; align-items:center; }
   #ttiMenu .tm-listen svg{ flex:none; }
   #ttiMenu .tm-listen:hover span{ color:#ff0; }
@@ -4989,6 +4996,44 @@ html.tti-in-case, html.tti-in-case body{ overflow:hidden !important; }
   <rect x="-6" y="-2" width="34" height="88" fill="transparent" pointer-events="all"/>
 </g>
 </g>
+
+<!-- the yellow note and two arrows pointing at the briefcase: open it to enter TTI -->
+<g id="tti_note" class="tti-note">
+    <g>
+      <polygon fill="#ff0" stroke="#000" stroke-miterlimit="10" stroke-width=".8" points="426.8 1470.3 266.9 1435.1 285.6 1350.3 297.6 1295.6 457.5 1330.8 426.8 1470.3"/>
+      <g>
+        <path fill="#ff0" stroke="#000" stroke-miterlimit="10" stroke-width=".8" d="M316.3,1323.3c-2,2.7-2.9,6.3-2.9,9.7,0,3.2,1.1,6.8,4,8.1,2.4,1.1,5.3,0,7.8-.9,5.4-2.3,11.2-5.1,13.6-10.4,1.2-2.6,1.3-5.9-.6-8-.6-.8-1.5-1.3-2.4-1.8C329.6,1316.8,320.7,1317.2,316.3,1323.3Z"/>
+        <path fill="#ff0" stroke="#000" stroke-miterlimit="10" stroke-width=".8" d="M333.9,1349.7c3.3-2.7,6.8-5.4,8.9-9.2,1.6-2.7,2.4-5.7,4-8.3,1-1.6,2.4-3.1,2.7-5,0-.3,0-.6.3-.9.2-.2.5-.3.8-.4,4.2-1.1,9,1.4,10.4,5.5.4.9.5,2,.3,3-.5,1.8-2.3,3-4.1,3.6-3.9,1.2-8.3.4-11.5-2.1"/>
+        <path fill="#ff0" stroke="#000" stroke-miterlimit="10" stroke-width=".8" d="M384.7,1334q-4.5-1.6-9.2-2.8c-1.2-.3-2.4-.5-3.5-.3-1.3.2-2.4,1-3.5,1.7q-3.3,2.3-6.5,4.6c-.7.5-1.5,1.1-1.9,1.8-.7,1.3-.4,3-.7,4.5-.3,1.6-1.3,2.9-1.9,4.3-.6,1.5-.8,3.4.4,4.5.7.7,1.8.8,2.8,1q6.1.9,12.2,1.8"/>
+        <path fill="#ff0" stroke="#000" stroke-miterlimit="10" stroke-width=".8" d="M361.2,1341.1q9.2,2,18.3,4"/>
+        <path fill="#ff0" stroke="#000" stroke-miterlimit="10" stroke-width=".8" d="M409.3,1340.2c-3.8,7.3-7.2,14.8-10,22.4-1.5-6.5-1.1-13.7-4.4-19.6-.9-1.5-2.1-3.3-1.4-5-7.3,5.4-11.5,14-15.4,22.2"/>
+      </g>
+      <g>
+        <path fill="#ff0" stroke="#000" stroke-miterlimit="10" stroke-width=".8" d="M330.7,1369.4c5.9,0,11.8.6,17.6,1.8,3.8.8,7.7,1.8,11.5,1.1"/>
+        <path fill="#ff0" stroke="#000" stroke-miterlimit="10" stroke-width=".8" d="M343.9,1371.2q-3.2,12-5.6,24.1"/>
+        <path fill="#ff0" stroke="#000" stroke-miterlimit="10" stroke-width=".8" d="M366.7,1368q-4.2,19.1-8.3,38.3"/>
+        <path fill="#ff0" stroke="#000" stroke-miterlimit="10" stroke-width=".8" d="M382.1,1373.8q-4.1,18.8-9.6,37.3"/>
+        <path fill="#ff0" stroke="#000" stroke-miterlimit="10" stroke-width=".8" d="M362.4,1388.6q7.9,1.2,15.8,3.2"/>
+        <path fill="#ff0" stroke="#000" stroke-miterlimit="10" stroke-width=".8" d="M400,1382.9q-4.5-1-8.9-2c-.4,0-.7-.2-1,0-.4,0-.7.4-.9.8-.9,1.5-1.6,3.1-2.1,4.8-1,3.2-1.7,6.5-2.3,9.7q-1,5.7-2.1,11.3c0,.2,0,.4,0,.6.2.2.4.2.6.3,5.5,1.2,11.5,0,16.8,2"/>
+        <path fill="#ff0" stroke="#000" stroke-miterlimit="10" stroke-width=".8" d="M384.8,1394.2c7.9.8,15.8,2,23.6,3.7"/>
+      </g>
+      <g>
+        <path fill="#ff0" stroke="#000" stroke-miterlimit="10" stroke-width=".8" d="M303.5,1398.3c-2.1-1.5-4.9-1.2-7.5-.9-1.6.2-3.3.5-4.7,1.4-1.3.9-2.3,2.7-1.6,4.2.7,1.9,3.4,2.3,5.4,1.7,2-.5,3.9-1.7,6-1.6,2.1,0,4,1.4,4.9,3.3.8,1.8.6,4.1-.6,5.8-.5.8-1.2,1.4-1.9,2.1-1.8,1.7-3.8,3.4-5.9,4.8-1.1.7-2.2,1.3-3.4,1.4-1.1.1-2.2-.2-3.3-.4-1.1-.3-2.2-.7-3.2-1.3-.9-.7-1.6-1.8-1.4-2.9"/>
+        <path fill="#ff0" stroke="#000" stroke-miterlimit="10" stroke-width=".8" d="M310.7,1401.5c.5,6,.1,12.1-1,18.1,0,.4-.2.9,0,1.4,0,.8.9,1.5,1.6,2,.5.3,1,.6,1.6.7.8.1,1.6-.2,2.4-.5,1.5-.6,3.1-1.3,4.3-2.4,2-1.8,2.8-4.5,3.6-7q1.4-4.7,2.8-9.3"/>
+        <path fill="#ff0" stroke="#000" stroke-miterlimit="10" stroke-width=".8" d="M329.3,1405.8q-2.2,9.7-4.5,19.4"/>
+        <path fill="#ff0" stroke="#000" stroke-miterlimit="10" stroke-width=".8" d="M365.3,1413.6c-4.2-.8-8.6-.4-12.7,1.1-1.7.6-3.5,1.6-4.3,3.3-.8,1.8-.2,4-.1,6,0,.6,0,1.1.1,1.7.4.9,1.3,1.5,2.2,1.9,4.3,1.9,9.2.7,13.8-.4"/>
+        <path fill="#ff0" stroke="#000" stroke-miterlimit="10" stroke-width=".8" d="M363.6,1433.5c3.7-2.6,7.5-5.3,9.7-9.2.7-1.2,1.3-2.5,2.1-3.7.7-1.1,1.7-2,2.7-3q2.3-2.3,4.6-4.6-3,13.7-6,27.4"/>
+        <path fill="#ff0" stroke="#000" stroke-miterlimit="10" stroke-width=".8" d="M370.3,1426.6c3.4.4,6.8,1.1,10.2,2"/>
+        <path fill="#ff0" stroke="#000" stroke-miterlimit="10" stroke-width=".8" d="M400.8,1418.4c-4.4-1.8-10-.3-12.9,3.5q1.4,1.5,2.9,2.9c.3.3.6.7,1,.8,1,.4,2-.3,3-.6,2.1-.8,4.6,0,6.1,1.7s1.8,4.2,1,6.3c-.8,2-2.5,3.5-4.5,4.2-2.1.8-4.3.9-6.4.5-1.8-.2-3.7-.9-4.4-2.6-.3-.7-.3-1.6,0-2.3"/>
+        <path fill="#ff0" stroke="#000" stroke-miterlimit="10" stroke-width=".8" d="M419.7,1421.7c-2.9-.7-5.8-1.4-8.7-1.9-.7,0-1.5-.2-2.2,0-1.6.3-2.9,1.6-3.9,2.9-1,1.1-1.9,2.2-2.3,3.6-.1.6-.2,1.2-.2,1.7q-.3,3.4-.5,6.7c-.2,2.1-.1,4.6,1.6,5.7.9.5,1.9.6,2.9.6,3.9,0,7.8-.4,11.6-1.3"/>
+        <path fill="#ff0" stroke="#000" stroke-miterlimit="10" stroke-width=".8" d="M402.5,1429c4.7,1.4,9.6,2.2,14.4,2.5"/>
+        <path fill="#ff0" stroke="#000" stroke-miterlimit="10" stroke-width=".8" d="M331.3,1406.8c7.1-.4,14.3.5,21,2.7"/>
+        <path fill="#ff0" stroke="#000" stroke-miterlimit="10" stroke-width=".8" d="M343.6,1407.5q-2.3,11.8-4.6,23.6"/>
+      </g>
+    </g>
+  </g>
+<g class="tti-arrow tti-arrow-l"><polygon fill="#ff0" stroke="#000" stroke-miterlimit="10" stroke-width=".8" points="186.3 1449.7 169.5 1468.3 184.4 1481.1 173.8 1492.9 216.8 1498.1 209.7 1457 201 1467.4 186.3 1449.7"/></g>
+<g class="tti-arrow tti-arrow-r"><polygon fill="#ff0" stroke="#000" stroke-miterlimit="10" stroke-width=".8" points="1191.2 1469.4 1172.6 1452.7 1159.8 1467.6 1148.1 1457 1141.9 1498 1184 1492.9 1173.5 1484.2 1191.2 1469.4"/></g>
 </svg>
 </div>
 
@@ -6406,7 +6451,11 @@ document.addEventListener('DOMContentLoaded', function(){
   function applySceneCrop(){
     if (!mainSvg || !sceneShift) return;
     if (mq.matches){
-      mainSvg.setAttribute('viewBox', '-120 -20 1536 1975');   // desktop: 20 of space above the scene (set with the scene tool)
+      // desktop: same scale as always on laptops, showing as much garden as fits; on wide screens the
+      // frame stops where the grass rows end (x 1320) and the garden grows to fill instead of showing a bare edge
+      const avail = mainSvg.parentElement.getBoundingClientRect().width || 1290;
+      const W = Math.min(avail / (1290/1536), 1440);
+      mainSvg.setAttribute('viewBox', `-120 -20 ${W.toFixed(1)} 1975`);   // 20 of space above the scene (set with the scene tool)
       sceneShift.setAttribute('transform', `translate(${nudgeSlider ? nudgeSlider.value : 0},0)`);
     } else {
       mainSvg.setAttribute('viewBox', '0 -27 1366 1982');   // phones: 27 of space above the scene (set with the scene tool)   // phones: one extra grass row behind the top row, and a little headroom
@@ -6414,6 +6463,7 @@ document.addEventListener('DOMContentLoaded', function(){
     }
   }
   mq.addEventListener('change', applySceneCrop);
+  window.addEventListener('resize', applySceneCrop);
   applySceneCrop();
 });
 
@@ -8199,9 +8249,13 @@ function render(){
   taglineEl.textContent = ins.tagline || '';
   const keep = p => p.replace(/(^|\s)(a|an|A|An|I)\s+/g, '$1$2\u00a0');   // short words like "a" and "I" never sit alone at the end of a line
   textEl.innerHTML = (ins.text||[]).map(p=>'<p>'+keep(p).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))+'</p>').join('');
+  fitText();
   rightEl.classList.toggle('is-wip', !ins.live);
 }
 
+// if the text is too long for its box on this screen, ease the size down a little (never below 80%) instead of cutting it off
+function fitText(){ const base=parseFloat(textEl.dataset.base||textEl.style.fontSize); if(!base) return; textEl.style.fontSize=base+'px';
+  let k=1; while(textEl.scrollHeight>textEl.clientHeight+1 && k>0.8){ k-=0.02; textEl.style.fontSize=(base*k).toFixed(2)+'px'; } }
 /* ---------------- layout: one scale for the sidebar and the menu, so they stay on the same grid ---------------- */
 let S=0.6, X=[0,0,0];
 function layout(){
@@ -8232,6 +8286,7 @@ function layout(){
   Object.assign(logoHost.style,{ top:px(R.logoY-1.4), height:px(R.logoH), width:px(452), left:px(-2) });
   Object.assign(taglineEl.style,{ top:px(R.taglineY), fontSize:fx(R.taglineFont,MIN.tagline) });
   Object.assign(textEl.style,{ top:px(R.textY), height:px(R.textBottom-R.textY), fontSize:fx(R.textFont,MIN.text), lineHeight:(R.lineH/R.textFont).toFixed(3) });
+  textEl.dataset.base=textEl.style.fontSize; fitText();
   Object.assign(listenEl.style,{ top:px(R.listenY), height:px(42), fontSize:fx(R.listenFont,MIN.listen), gap:px(14) });
   listenEl.querySelector('svg').style.width=px(42); listenEl.querySelector('svg').style.height=px(42);
   Object.assign(sampleEl.style,{ top:px(R.sampleY), width:px(R.sampleW), height:px(R.sampleH) });
