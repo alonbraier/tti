@@ -7406,7 +7406,7 @@ function makeIR(sec,dec){
 }
 function boot(){
   ac=(typeof window.ac==='function')?window.ac():new (window.AudioContext||window.webkitAudioContext)();   // share the portal's audio context
-  master=ac.createGain(); master.gain.value=0.99;   // 10% louder than the old 0.9 (Alon's ears)
+  master=ac.createGain(); master.gain.value=1.09;   // +10% twice over the old 0.9 (Alon's ears, next to the DADO sample)
   verb=ac.createConvolver(); verb.buffer=makeIR(4.2,2.4);
   dry=ac.createGain(); dry.gain.value=0.5;
   wet=ac.createGain(); wet.gain.value=0.85;
