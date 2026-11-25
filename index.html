@@ -69,6 +69,7 @@
   @keyframes ttiArrowL{ from{ transform:translate(-7px,-7px); } to{ transform:translate(7px,7px); } }
   @keyframes ttiArrowR{ from{ transform:translate(7px,-7px); } to{ transform:translate(-7px,7px); } }
   .tti-note{ pointer-events:none; }
+  body.pe-editing .tti-note, body.pe-editing .tti-arrow{ pointer-events:auto; }   /* selectable in the placement editor (E) */
   @keyframes switchPulse {
     0%,100% { opacity:1; }
     50% { opacity:0.55; }
@@ -5032,8 +5033,8 @@ html.tti-in-case, html.tti-in-case body{ overflow:hidden !important; }
       </g>
     </g>
   </g>
-<g class="tti-arrow tti-arrow-l"><polygon fill="#ff0" stroke="#000" stroke-miterlimit="10" stroke-width=".8" points="186.3 1449.7 169.5 1468.3 184.4 1481.1 173.8 1492.9 216.8 1498.1 209.7 1457 201 1467.4 186.3 1449.7"/></g>
-<g class="tti-arrow tti-arrow-r"><polygon fill="#ff0" stroke="#000" stroke-miterlimit="10" stroke-width=".8" points="1191.2 1469.4 1172.6 1452.7 1159.8 1467.6 1148.1 1457 1141.9 1498 1184 1492.9 1173.5 1484.2 1191.2 1469.4"/></g>
+<g id="tti_arrow_left" class="tti-arrow tti-arrow-l"><polygon fill="#ff0" stroke="#000" stroke-miterlimit="10" stroke-width=".8" points="186.3 1449.7 169.5 1468.3 184.4 1481.1 173.8 1492.9 216.8 1498.1 209.7 1457 201 1467.4 186.3 1449.7"/></g>
+<g id="tti_arrow_right" class="tti-arrow tti-arrow-r"><polygon fill="#ff0" stroke="#000" stroke-miterlimit="10" stroke-width=".8" points="1191.2 1469.4 1172.6 1452.7 1159.8 1467.6 1148.1 1457 1141.9 1498 1184 1492.9 1173.5 1484.2 1191.2 1469.4"/></g>
 </svg>
 </div>
 
@@ -6535,7 +6536,7 @@ console.log('TTI portal ready');
   let editing=false, selected=[], hoverEl=null;
   const log = {};
   const hud=document.getElementById('peHud'), selBox=document.getElementById('peSel'), logBox=document.getElementById('peLog');
-  function toggle(on){ editing=on; hud.style.display=on?'block':'none'; if(!on)clearHover(); }
+  function toggle(on){ editing=on; hud.style.display=on?'block':'none'; document.body.classList.toggle('pe-editing',on); if(!on)clearHover(); }
   function clearHover(){ if(hoverEl){hoverEl.classList.remove('pe-hover');hoverEl=null;} }
   function ensureWrapper(el){
     if (el.__peWrap) return el.__peWrap;
