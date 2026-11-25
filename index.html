@@ -7727,6 +7727,12 @@ KNOBS.forEach((k,i)=>{
 
 $('knob_indicators').remove();   // the little meters under the pink knobs are gone
 
+// "ready to play": until the first touch on any control, or until the arp starts, the first arp light blinks
+// and the square buttons' lights breathe softly. Then it all goes back to normal for good.
+let invite=true;
+document.addEventListener('pointerdown',e=>{ if(invite && e.target.closest && e.target.closest('.tc-tap,.tc-hit')) invite=false; },true);
+const inviteOn=()=>{ if(invite && running) invite=false; return invite; };
+
 /* ======================= 2. arp knobs (first T): turn on their centre, pointer line shows the value ======================= */
 const ARPV=[], ARP_SPR=[];
 [['Arp1',705,101.4,'arp_raw_high',0],['arp2',831.6,101.4,'Arp_raw_low',1]].forEach(([id,cx,cy,rowId,vi])=>{
@@ -7746,9 +7752,10 @@ const ARPV=[], ARP_SPR=[];
 const hex=c=>{ const m=c.match(/\d+/g); return m.slice(0,3).map(Number); };
 const mix=(a,b,t)=>'rgb('+a.map((x,i)=>Math.round(x+(b[i]-x)*t)).join(',')+')';
 ARPV.forEach(v=>v.dots.forEach(d=>{ const c=hex(getComputedStyle(d).fill); d.dataset.base='rgb('+c.join(',')+')'; d.dataset.bright=mix(c,[255,255,255],.6); }));
-(function dots(){ ARPV.forEach(v=>{ const a=v.arp?ARPS[v.arp-1]:null, cur=(a&&running&&v.pos>0)?((v.pos-1)%a.seq.length)%5:-1;
+(function dots(now){ const inv=inviteOn(), blinkOn=inv && ((now||0)%1300)<650;     // resting at step one, ready to go
+  ARPV.forEach(v=>{ const a=v.arp?ARPS[v.arp-1]:null, cur=(a&&running&&v.pos>0)?((v.pos-1)%a.seq.length)%5:(blinkOn?0:-1);
   // resting: the dot's own colour, black outline. Lit: a much brighter version with a white outline
-  v.dots.forEach((d,i)=>{ const on=i===cur; d.style.fill = on ? d.dataset.bright : d.dataset.base; d.style.stroke = '#000'; }); }); requestAnimationFrame(dots); })();
+  v.dots.forEach((d,i)=>{ const on=i===cur; d.style.fill = on ? d.dataset.bright : d.dataset.base; d.style.stroke = '#000'; }); }); requestAnimationFrame(dots); })(0);
 
 /* ======================= 3. I buttons: momentary, top drops 18.6 and the base shortens 19.4 (your two stages), springy release ======================= */
 $('I_button_1_base_pressed').remove(); $('I_button_1_top_pressed').remove();
@@ -7786,8 +7793,13 @@ function squareToggle(name,groupId,capSel,stripSel,flicker,litFill,unlitFill,one
     const up=()=>{ if(oneHit){ s.x=0; } else { on=!on; s.x=on?1:0; onPress(on); } window.removeEventListener('pointerup',up); };   // toggle stays down; one-hit pops back
     window.addEventListener('pointerup',up); }));
   flicker.style.fill=unlitFill;
+  const rgb=c=>{ let s=c.replace('#',''); if(s.length===3) s=s.split('').map(x=>x+x).join(''); return s.match(/../g).map(x=>parseInt(x,16)); };
+  const cU=rgb(unlitFill), cL=rgb(litFill);
+  const phase=oneHit?Math.PI:0;                                     // the two lights breathe out of step
   (function blink(now){ const lit = oneHit ? (now-hitT)<160 : (on && litNow(now));
-    flicker.style.fill = lit ? litFill : unlitFill; requestAnimationFrame(blink); })(0);
+    if(!lit && inviteOn()){ const t=(Math.sin(now/1300*Math.PI*2+phase)+1)/2; flicker.style.fill=mix(cU,cL,t*.85); }   // breathing while it waits
+    else flicker.style.fill = lit ? litFill : unlitFill;
+    requestAnimationFrame(blink); })(0);
   show(name,'off');
   return { off(){ on=false; s.x=0; } };
 }
