@@ -7406,7 +7406,7 @@ function makeIR(sec,dec){
 }
 function boot(){
   ac=(typeof window.ac==='function')?window.ac():new (window.AudioContext||window.webkitAudioContext)();   // share the portal's audio context
-  master=ac.createGain(); master.gain.value=1.19;   // +10% three times over the old 0.9 (Alon's ears, next to the DADO sample)
+  master=ac.createGain(); master.gain.value=1.29;   // +10% four times over the old 0.9 (Alon's ears, next to the DADO sample)
   verb=ac.createConvolver(); verb.buffer=makeIR(4.2,2.4);
   dry=ac.createGain(); dry.gain.value=0.5;
   wet=ac.createGain(); wet.gain.value=0.85;
@@ -7416,7 +7416,9 @@ function boot(){
   toneHP=ac.createBiquadFilter(); toneHP.type='highpass'; toneHP.frequency.value=20; toneHP.Q.value=0.9;
   outBus=ac.createGain(); outBus.gain.value=powerOff?0:1;   // starts muted if the switch is already off
   diveGain=ac.createGain(); diveGain.gain.value=diveOn?0:1;
-  toneLP.connect(toneHP).connect(diveGain).connect(outBus).connect(ac.destination);
+  // a soft safety limiter at the very end, now that the garden plays louder: catches the loudest peaks before they crackle
+  const ttiLimiter=ac.createDynamicsCompressor(); ttiLimiter.threshold.value=-2; ttiLimiter.knee.value=4; ttiLimiter.ratio.value=12; ttiLimiter.attack.value=0.003; ttiLimiter.release.value=0.12;
+  toneLP.connect(toneHP).connect(diveGain).connect(outBus).connect(ttiLimiter).connect(ac.destination);
   master.connect(dry).connect(toneLP);
   master.connect(damp).connect(verb).connect(wet).connect(toneLP);
   // drier bus for close/intimate sounds (radio) — mostly dry, tiny verb send
