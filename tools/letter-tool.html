@@ -95,6 +95,8 @@
     transition: opacity 0.4s ease-out;
   }
   #Main_note.is-hidden{ opacity: 0; }
+  #tti_note{ transition: opacity .35s ease; }
+  #tti_note.is-hidden{ opacity: 0; pointer-events:none; }
 
   #caseBlackout{
     position:fixed; top:0; bottom:0; background:#000; z-index:3000;
@@ -6153,6 +6155,7 @@ function latchClick(){
     setTimeout(() => {
       if (openLid) openLid.classList.add('is-open');
       if (mainNote) mainNote.classList.add('is-hidden');
+      const tn=document.getElementById('tti_note'); if (tn) tn.classList.add('is-hidden');   // the yellow note goes with it
     }, 140);
 
     // 2) hold on the open case, then fade to black; start the warp field running now too,
@@ -6186,6 +6189,7 @@ function latchClick(){
       if (blackout) blackout.classList.remove('is-active');
       if (openLid) openLid.classList.remove('is-open');
       if (mainNote) mainNote.classList.remove('is-hidden');
+      const tn=document.getElementById('tti_note'); if (tn) tn.classList.remove('is-hidden');
       caseIsOpen = false;
       opened = false;
     }, 500);
@@ -8023,7 +8027,7 @@ function measure(){ const w=document.querySelector('.svg-wrap'); const sh=w?w.ge
   collapsedY=Math.round(Math.max(innerHeight*.35, Math.min(sh, innerHeight-120))); if(!dragging) setY(expanded?0:collapsedY,false); }
 const openLid=document.getElementById('openBoxLid'), mainNote=document.getElementById('Main_note');
 let lidOpen=false;
-function setLid(open){ if(open===lidOpen) return; lidOpen=open; if(openLid) openLid.classList.toggle('is-open',open); if(mainNote) mainNote.classList.toggle('is-hidden',open); }
+function setLid(open){ if(open===lidOpen) return; lidOpen=open; if(openLid) openLid.classList.toggle('is-open',open); if(mainNote) mainNote.classList.toggle('is-hidden',open); const tn=document.getElementById('tti_note'); if(tn) tn.classList.toggle('is-hidden',open); }
 function progress(y){ return collapsedY>0 ? 1-Math.max(0,Math.min(collapsedY,y))/collapsedY : 0; }   // 0 resting .. 1 covering the scene
 let dimTimer=0;
 function onMove(y,dur){ const p=progress(y);
