@@ -271,8 +271,8 @@
 .m-card2.is-in .m-card-art{ animation:mIn .26s ease-out; } @keyframes mIn{ from{opacity:0} to{opacity:1} }
 .m-wip-label{ position:absolute; left:0; right:0; text-align:center; letter-spacing:.03em; font-size:15px; color:#fff; display:none; pointer-events:none; }
 .m-card2.is-wip .m-wip-label{ display:block; }
-.m-play-hint{ position:absolute; left:50%; top:50%; transform:translate(-50%,-50%) scale(.96); padding:5px 20px 6px; border-radius:999px; background:#000; color:#fff;
-  font-size:19px; letter-spacing:.02em; opacity:0; pointer-events:none; }
+.m-play-hint{ position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); padding:5px 20px 6px; border-radius:999px; background:#000; color:#fff;
+  font-size:19px; letter-spacing:.02em; pointer-events:none; }   /* like desktop's hover Play, always shown on the phone */
 .m-card2.is-wip .m-play-hint{ display:none; }
 .m-play-hint.flash{ animation:mPlayFlash 2.2s ease-in-out; }
 @keyframes mPlayFlash{ 0%{opacity:0; transform:translate(-50%,-50%) scale(.94)} 22%{opacity:1; transform:translate(-50%,-50%) scale(1)} 70%{opacity:1} 100%{opacity:0; transform:translate(-50%,-50%) scale(1)} }
@@ -7918,7 +7918,7 @@ const BEND_MAX=2;   // semitones at full pull (pulling down bends the pitch down
   <div class="m-deck" id="ms_deck">
     <button class="m-arrow" id="ms_prev" type="button" aria-label="Previous instrument"><svg viewBox="0 0 40 96" aria-hidden="true"><polyline points="27 38 13 48 27 58" fill="none" stroke="#fff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     <div class="m-card">
-      <div class="m-card2" id="ms_card2"><div class="m-card-art" id="ms_cardHost"></div><div class="m-wip-label" id="ms_wipLabel">WORK IN PROGRESS</div></div>
+      <div class="m-card2" id="ms_card2"><div class="m-card-art" id="ms_cardHost"></div><div class="m-wip-label" id="ms_wipLabel">WORK IN PROGRESS</div><div class="m-play-hint" id="ms_playHint">Play</div></div>
     </div>
     <button class="m-arrow" id="ms_next" type="button" aria-label="Next instrument"><svg viewBox="0 0 40 96" aria-hidden="true"><polyline points="13 38 27 48 13 58" fill="none" stroke="#fff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
   </div>
@@ -8001,8 +8001,7 @@ const pop=$('aboutPop'); document.getElementById('mSheet').appendChild(pop);   /
 function openAbout(){ pop.classList.add('is-open'); pop.setAttribute('aria-hidden','false'); pop.scrollTop=0; }
 function closeAbout(){ pop.classList.remove('is-open'); pop.setAttribute('aria-hidden','true'); }
 $('lnkAbout').addEventListener('click',e=>{ e.preventDefault(); if(window.__ttiSheet && !document.getElementById('mSheet').classList.contains('was-opened')) window.__ttiSheet.expand(); openAbout(); });
-let lastTap=0; pop.addEventListener('touchend',e=>{ const t=Date.now(); if(t-lastTap<320){ e.preventDefault(); closeAbout(); } lastTap=t; });
-pop.addEventListener('dblclick',closeAbout);
+pop.addEventListener('click',closeAbout);   // one tap anywhere closes it (scrolling the text doesn't)
 addEventListener('load',()=>{ const sig=[...document.querySelectorAll('#sidebarSvg [stroke-width="2.4"]')];      // your drawn signature, from the sidebar
   $('aboutSig').innerHTML=sig.map(p=>{ const c=p.cloneNode(true); c.removeAttribute('style'); return c.outerHTML; }).join(''); });
 
