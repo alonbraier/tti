@@ -270,7 +270,7 @@
 .m-card-art .tm-num-dark *{ stroke:#000 !important; }
 .m-card2.is-in .m-card-art{ animation:mIn .26s ease-out; } @keyframes mIn{ from{opacity:0} to{opacity:1} }
 .m-wip-label{ position:absolute; left:0; right:0; text-align:center; letter-spacing:.03em; font-size:15px; color:#fff; display:none; pointer-events:none; }
-.m-card2.is-wip .m-wip-label{ display:block; }
+.m-card2.is-wip .m-wip-label{ display:block; top:50%; transform:translateY(-50%); }   /* same height as Play on DADO's card */
 .m-play-hint{ position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); padding:5px 20px 6px; border-radius:999px; background:#000; color:#fff;
   font-size:19px; letter-spacing:.02em; pointer-events:none; }   /* like desktop's hover Play, always shown on the phone */
 .m-card2.is-wip .m-play-hint{ display:none; }
@@ -7975,10 +7975,9 @@ function show(k){
   const ins=D.content[cur-1], live=!!ins.live;
   const c=$('card2'); c.classList.toggle('is-wip',!live); c.style.background = live ? (ins.card&&ins.card.color||'#ffb3c1') : '#000';
   c.classList.remove('is-in'); void c.offsetWidth; $('cardHost').innerHTML=D.cardArt(ins); c.classList.add('is-in');
-  $('wipLabel').style.top=(D.labelY*100).toFixed(2)+'%';
   $('logo').style.display = live ? '' : 'none';
   $('listen').style.display = live ? '' : 'none';
-  $('tag').innerHTML = live ? (ins.tagline||'') : '<div class="m-name">'+esc(ins.name)+'</div>'+esc(ins.tagline||'');
+  $('tag').innerHTML = esc(ins.tagline||'');   // in-progress cards: no name, just "The instrument is taking shape"
   $('desc').innerHTML=(ins.text||[]).map(p=>'<p>'+esc(p)+'</p>').join('');
   $('mail').hidden=live;
   if(!live) $('mail').innerHTML='Want to know when the next instrument is ready? <a href="'+D.MAILING_URL+'" target="_blank" rel="noopener">Join the mailing list</a> or <a href="'+D.INSTAGRAM_URL+'" target="_blank" rel="noopener">follow along on Instagram</a>';
