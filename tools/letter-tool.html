@@ -7863,7 +7863,13 @@ const BEND_MAX=2;   // semitones at full pull (pulling down bends the pitch down
     ridges[1].setAttribute('y1',(PIV+26+shift).toFixed(2)); ridges[1].setAttribute('y2',(PIV+26+shift).toFixed(2));
     cap.setAttribute('cy',st.y.toFixed(2)); cap.setAttribute('rx',st.rx.toFixed(2)); cap.setAttribute('ry',st.ry.toFixed(2));
     bend = -BEND_MAX*(2-clamp(t,-1,2))/3; });
-  let t0; drag(host,{start:()=>{ t0=s.x; s.k=900; s.d=38; }, move:(dx,dy)=>{ s.x=clamp(t0-dy/45,-1,2); }, end:()=>{ s.k=520; s.d=22; s.x=2; }});  // springs back to rest
+  // let go anywhere: it springs back up. Let go at the very bottom: it stays down (the bend holds) until the next touch, which pops it back up
+  let t0, latched=false, popping=false;
+  drag(host,{
+    start:()=>{ if(latched){ latched=false; popping=true; s.k=520; s.d=22; s.x=2; return; } t0=s.x; s.k=900; s.d=38; },
+    move:(dx,dy)=>{ if(popping) return; s.x=clamp(t0-dy/45,-1,2); },
+    end:()=>{ if(popping){ popping=false; return; } s.k=520; s.d=22;
+      if(s.x<=-0.85){ latched=true; s.x=-1; } else s.x=2; }});
 }
 
 /* ======================= 8. on/off switch on the speaker: kill all sound, back to the start ======================= */
